@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "src/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "趣出行",
+    "navigationBarBackgroundColor": "#000000",
+    "backgroundColor": "#FFFFFF",
+    "enablePullDownRefresh" : false
+  },
+  "networkTimeout": {
+    "request": 30000,
+    "connectSocket": 30000,
+    "uploadFile": 30000,
+    "downloadFile": 30000
+  },
+  "debug": true
+}

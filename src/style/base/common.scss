@@ -1,0 +1,178 @@
+.padding {
+  padding: 15px;
+}
+.padding-updown {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.padding-top {
+  padding-top: 15px;
+}
+.padding-bottom {
+  padding-bottom: 15px;
+}
+.padding-right {
+  padding-right: 15px;
+}
+.padding-left {
+  padding-left: 15px;
+}
+.padding-lr{
+  padding: 0 15px;
+}
+
+
+.padding-top-sm {
+  padding-top: 10px;
+}
+.padding-updown-sm{
+  padding: 10px 0;
+}
+.padding-right-sm{
+  padding-right: 10px;
+}
+
+.padding-lg{
+  padding: 20px;
+}
+.padding-top-lg {
+  padding-top: 20px;
+}
+
+.margin-left-sm {
+  margin-left: 10px;
+}
+
+.margin{
+  margin: 15px;
+}
+.margin-top{
+  margin-top: 15px;
+}
+.margin-bottom{
+  margin-bottom: 15px;
+}
+
+.margin-bottom-lg{
+  margin-bottom: 20px;
+}
+.margin-top-lg{
+  margin-top: 20px;
+}
+
+.text-right{
+  text-align: right;
+}
+
+.text-left{
+  text-align: left;
+}
+
+.border-top{
+  border-top: 1rpx solid #e1e1e1;
+}
+.border-bottom{
+  border-bottom: 1rpx solid #e1e1e1;
+}
+.border-none{
+  border: none !important;
+}
+
+.border-radius_none{
+  border-radius: 0px !important;
+}
+
+.fix-bottom{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-center_column{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-bofore_after{
+  &:before{
+    display: none !important;
+  }
+  &:after{
+    display: none !important;
+  }
+}
+.no-before{
+  &:before{
+    display: none !important;
+  }
+}
+.no-after{
+  &:after{
+    display: none !important;
+  }
+}
+.text-white{
+  color: #FFFFFF !important;
+}
+.back-white{
+  background-color: #FFFFFF !important;
+}
+.text-gray{
+  color: #999999 !important;
+}
+.color-nine{
+  color: #999999 !important;
+}
+.color-six{
+  color: #666666 !important;
+}
+.color-000{
+  color: #000 !important;
+}
+.color-666{
+  color: #666 !important;
+}
+.color-888{
+  color: #888 !important;
+}
+.color-999{
+  color: #999 !important;
+}
+
+.font-12{
+  font-size: 12px !important;
+}
+.font-14{
+  font-size: 14px !important;
+}
+.font-16{
+  font-size: 16px !important;
+}
+.font-18{
+  font-size: 18px !important;
+}
+.font-20{
+  font-size: 20px !important;
+}
+
+.block-add{
+  background-color: #EFEFF4;
+  height: 15px;
+}
+
+.hidden {
+    visibility: hidden !important;
+}
+
+.visible {
+    visibility: visible !important;
+}
