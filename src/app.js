@@ -14,6 +14,7 @@ var appConfig = {
       wx.login({
         success (loginres) {
           wx.getUserInfo({
+            withCredentials: true,
             success (res) {
               let userInfo = res.userInfo
               that.globalData.wechatInfo = userInfo
@@ -58,6 +59,7 @@ var appConfig = {
       const that = this
       const { code } = options
       const { iv, encryptedData } = that.globalData.wechatConfig
+      console.log(options,'---------------',this.globalData.wechatConfig)
     }
 }
 

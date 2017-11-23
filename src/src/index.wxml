@@ -1,3 +1,15 @@
-<view>
-    趣出行小程序
-</view>
+<map id="map" 
+	longitude="{{ longitude }}" 
+	latitude="{{ latitude }}" 
+	scale="14" 
+	controls="{{controls}}" 
+	bindcontroltap="controltap" 
+	markers="{{markers}}" 
+	bindmarkertap="markertap" 
+	polyline="{{polyline}}" 
+	bindregionchange="regionchange" 
+	show-location 
+	style="width: {{ video_width }}px; height:200px;"
+	animation="{{click ? animationData : ''}}">
+</map>
+<button bindtap="onclick_view">点击</button>
