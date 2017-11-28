@@ -1,15 +1,195 @@
-<map id="map" 
-	longitude="{{ longitude }}" 
-	latitude="{{ latitude }}" 
-	scale="14" 
-	controls="{{controls}}" 
-	bindcontroltap="controltap" 
-	markers="{{markers}}" 
-	bindmarkertap="markertap" 
-	polyline="{{polyline}}" 
-	bindregionchange="regionchange" 
-	show-location 
-	style="width: {{ video_width }}px; height:200px;"
-	animation="{{click ? animationData : ''}}">
-</map>
-<button bindtap="onclick_view">点击</button>
+<view hidden="{{ !homeOfwork }}" style="width: {{ video_width }}px; height:{{ video_height }}px;" >	
+	<map id="map" 
+		longitude="{{ longitude }}" 
+		latitude="{{ latitude }}" 
+		scale="14" 
+		controls="{{ controls }}" 
+		bindcontroltap="controltap" 
+		markers="{{ markers }}" 
+		bindmarkertap="markertap" 
+		polyline="{{ polyline }}" 
+		show-location 
+		style="width: 100%; height: 100%;"
+		></map>
+</view>
+<view hidden="{{ homeOfwork }}" style="width: {{ video_width }}px; height:{{ video_height - 257 }}px;" >	
+	<map id="map" 
+		longitude="{{ longitude }}" 
+		latitude="{{ latitude }}" 
+		scale="14" 
+		bindcontroltap="controltap" 
+		bindmarkertap="markertap" 
+		polyline="{{ polyline }}" 
+		bindregionchange="regionchange" 
+		controls="{{ controls_samll }}"
+		show-location 
+		style="width: 100%; height: 100%;"
+		bindtap="hideCode"
+		></map>
+</view>
+<view class="form_journey" animation="{{ !homeOfwork ? selectJourney_animation : '' }}">
+	<view hidden="{{ hideOfShow_type != 'form' }}">
+		<view class="select_identity">
+			<view class="select_identity_active">乘客</view>
+			<view>车主</view>
+		</view>
+		<view class="select_destination">
+			<view>中关村创业大厦</view>
+			<view>到</view>
+			<view>中关村创业大厦</view>
+		</view>
+		<view class="select_multiSelect">
+			<picker mode="time" value="{{time}}" start="09:01" end="21:01" bindchange="bindPickerChange">
+				<view class="select_tiem">
+						<view class="icon">
+							<image></image>
+						</view>
+						<view class="common_select">
+							<view>出发时间</view>
+						    	<view class="time">
+						      	{{time}}
+						    	</view>
+						</view>
+				</view>
+		    </picker>
+			<picker bindchange="bindPickerChange" value="{{seat_number_index}}" range="{{seat_number}}">
+				<view class="select_tiem select_tiem_noBorder">
+					<view class="icon">
+						<image></image>
+					</view>
+					<view class="common_select">
+						<view>座位数</view>
+					    	<view class="time">
+					      	{{seat_number[seat_number_index]}}
+					    	</view>
+					</view>
+				</view>
+		    </picker>
+			<view class="select_tiem">
+				<view class="icon">
+					<image></image>
+				</view>
+				<view class="common_select">
+					<view>选择路线</view>
+			    	<view class="time">
+			    		时间最短
+			    	</view>
+				</view>
+			</view>
+			<picker bindchange="bindPickerChange" value="{{select_price_index}}" range="{{select_price}}">
+				<view class="select_tiem select_tiem_noBorder">
+					<view class="icon">
+						<image></image>
+					</view>
+					<view class="common_select">
+						<view>票价 (元 / 位)</view>
+					    	<view class="time">
+					      	{{select_price[select_price_index]}}
+					    	</view>
+					</view>
+				</view>
+		    </picker>
+		</view>
+		<view class="commit_journey">
+			<view class="call_off">稍后</view>
+			<view class="affirm">确认</view>
+		</view>
+	</view>
+	<view style="position: relative;" hidden="{{ hideOfShow_type != 'info' }}">
+		<view class="code_journey_info">
+			<view class="code_journey_title">15分钟后自动确认上车<text>延时</text></view>
+			<view class="navigation">
+				<view class="navigation_up">
+					<view class="nav_img">
+						<image></image>
+					</view>
+					<view class="nav_info">
+						<view class="nav_info_news">导航至上车点</view>
+						<view class="nav_loaction">工贸技师学院</view>
+					</view>
+				</view>
+				<view class="navigation_down">
+					<view class="nav_img">
+						<image></image>
+					</view>
+					<view class="nav_info">
+						<view class="nav_info_news">导航至上车点</view>
+						<view class="nav_loaction">工贸技师学院</view>
+					</view>
+				</view>
+			</view>
+			<view class="car_master">
+				<view class="car_master_info">
+					<view class="car_img">
+						<image src="../images/img_me.jpg"></image>
+					</view>
+					<view class="car_news">
+						<view class="car_master_name">王晓明<text>10分钟前</text></view>
+						<view class="car_master_code"><text>京A54563</text> 奥迪 银色</view>
+					</view>
+				</view>
+				<view class="car_timeAndPhone">
+					<view>08:30</view>
+					<view>电话</view>
+				</view>
+			</view>
+			<view class="car_passenger">
+				<view class="car_passenger_img">
+					<image src="../images/img_me.jpg"></image>
+				</view>
+				<view class="car_passenger_img">
+					<image src="../images/img_me.jpg"></image>
+				</view>
+				<view class="car_passenger_img">
+					<image src="../images/img_me.jpg"></image>
+				</view>
+				<view class="car_passenger_img">
+					<image src="../images/img_me.jpg"></image>
+				</view>
+			</view>
+		</view>
+		<view class="car_foot_btn">
+			<view class="baoqilai">
+				<view>客服</view>
+				<view>车主迟到</view>
+				<view>取消行程</view>
+				<view>分享</view>
+			</view>
+		</view>
+	</view>
+</view>
+
+<swiper bindchange="durationChange" hidden="{{ !homeOfwork }}">
+	<swiper-item>
+		<view class="tab_index">
+			<view class="index_common selct_work_home">
+				<view class="select" data-type="form" bindtap="goHomeOfWork">
+					<image></image>
+					<view>回家</view>
+				</view>
+				<view>|</view>
+				<view class="select" data-type="form" bindtap="goHomeOfWork">
+					<image></image>
+					<view>公司</view>
+				</view>
+			</view>
+		</view>
+	</swiper-item>
+	<block wx:for="{{imgUrls}}" wx:key="{{index}}">
+		<swiper-item>
+			<view class="tab_index" data-type="info" bindtap="goHomeOfWork">
+				<view class="journey_list index_common">
+					<view class="journey_img">
+						<image src="../images/img_me.jpg"></image>
+					</view>
+					<view class="journey_news">
+						<view class="journey_title">明天10:30记得准时上车哦agcasjk</view>
+						<view class="journey_info"><text class="car_name">王晓明 </text><text class="car_code">京A88888</text> 奥迪A6L 白金色lalalalla</view>
+					</view>
+				</view>
+			</view>
+		</swiper-item>
+	</block>
+</swiper>
+<view class="tab_left"></view>
+<view class="tab_right"></view>

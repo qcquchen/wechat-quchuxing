@@ -1,52 +1,130 @@
-import * as api from '../js/api'
+import * as passenger_api from '../js/passenger_api'
+import * as driver_api from '../js/driver_api'
 import * as util from '../js/utils'
 import { appLaunchCheck } from '../js/utils'
 import moment from '../js/moment'
 import * as constants from '../js/constants'
 
 var app = getApp()
+
 var animation = wx.createAnimation({
-  duration: 1000,
-    timingFunction: 'ease',
+  duration: 900,
+  timingFunction: 'ease'
 })
+
+var first_controls = Object.assign({}, {
+  id: 1,
+  iconPath: '../images/icon_circle_like_comment@3x.png',
+  position: {
+    left: 0,
+    top: 0,
+    width: 20,
+    height: 20
+  },
+  clickable: true
+})
+
+var two_controls = Object.assign({}, {
+  id: 2,
+  iconPath: '../images/icon_home_me@3x.png',
+  position: {
+    left: 10,
+    top: 15,
+    width: 50,
+    height: 50
+  },
+  clickable: true
+})
+
+var three_controls = Object.assign({}, {
+  id: 3,
+  iconPath: '../images/icon_home_group@3x.png',
+  position: {
+    left: 10,
+    top: 80,
+    width: 50,
+    height: 50
+  },
+  clickable: true
+})
+
+var four_controls = Object.assign({}, {
+  id: 4,
+  iconPath: '../images/icon_home_msg@3x.png',
+  position: {
+    left: 10,
+    top: 145,
+    width: 50,
+    height: 50
+  },
+  clickable: true
+})
+
+var five_controls = Object.assign({}, {
+  id: 5,
+  iconPath: '../images/btn_locate@3x.png',
+  position: {
+    left: 15,
+    top: 15,
+    width: 50,
+    height: 50
+  },
+  clickable: true
+})
+
 Page({
-    data: {
-        markers: [{
-          iconPath: "/resources/others.png",
-          id: 0,
-          latitude: 23.099994,
-          longitude: 113.324520,
-          width: 50,
-          height: 50
-        }],
+      data: {
+        markers: [],
         polyline: [{
           points: [{
-            longitude: 113.3245211,
-            latitude: 23.10229
+            longitude: 116.41688154504395,
+            latitude: 39.90475426301773
           }, {
-            longitude: 113.324520,
-            latitude: 23.21229
+            longitude: 116.41653822229004,
+            latitude: 39.91495897331904
+          },{
+            longitude: 116.40735433862305,
+            latitude: 39.91634143003664
           }],
           color:"#FF0000DD",
-          width: 5,
+          width: 15,
           dottedLine: false,
           arrowLine: true,
-          borderColor: '#000000'
+          borderColor: '#0091ff',
+          borderWidth: 5
         }],
+        controls: [],
+        controls_samll: [],
         video_width: 0,
         video_height: 0,
         latitude: 0,
         longitude: 0,
-        animationData: {},
-        click: false
+        imgUrls: [1,2,3,4],
+        current: 0,
+        time: '12:01',
+        seat_number: [1,2,3,4],
+        seat_number_index: 0,
+        select_price:[10,20,30,40],
+        select_price_index: 0,
+        journey_active: true,
+        homeOfwork: true,
+        selectJourney_animation: {},
+        hideOfShow_type: ''
       },
       onLoad(){
         let self = this
         wx.getSystemInfo({
           success: function(res) {
+            first_controls.position.left = res.windowWidth/2
+            first_controls.position.top = (res.windowHeight - 84)/2
+            two_controls.position.left = res.windowWidth - 65
+            three_controls.position.left = res.windowWidth - 65
+            four_controls.position.left = res.windowWidth - 65
+            five_controls.position.top = res.windowHeight - ( 84 + 65 )
             self.setData({
               video_width: res.windowWidth,
-              video_height: res.windowHeight
+              video_height: res.windowHeight - 84,
+              controls:[two_controls, three_controls, four_controls, five_controls]
             })
           }
         })
@@ -58,71 +136,64 @@ Page({
               latitude: res.latitude,
               longitude: res.longitude
             })
+            self.postNearbyOfPeople(res.latitude, res.longitude)
           }
         })
       },
+      // initData(){
+      //   this.postNearbyOfPeople()
+      // },
       onReady: function (e) {
         this.mapCtx = wx.createMapContext('map')
       },
-      animation_big: function(){
+      
+      // 显示提交行程code
+      goHomeOfWork:function(e){
+        const { currentTarget: { dataset: { type } } } = e
+        console.log(type,'-------type')
+        this.setData({
+          hideOfShow_type: type
+        })
+        this.showSelectHomeOfWork()
+      },
+      showSelectHomeOfWork(){
         let height = this.data.video_height
         let width = this.data.video_width
-        console.log(height,'big-----height--')
-        animation.opacity(1).height(height).step()
+        five_controls.position.top = height - ( 341 - 15 )
+
+        const showSelectHomeOfWork_animation = animation
+        showSelectHomeOfWork_animation.opacity(1).height(340).step()
         this.setData({
-          animationData: animation.export(),
-          controls: [{
-            id: 1,
-            iconPath: '/resources/location.png',
-            position: {
-              left: width/2,
-              top: height/2,
-              width: 20,
-              height: 20
-            },
-            clickable: true
-          }]
+          selectJourney_animation: showSelectHomeOfWork_animation.export(),
+          controls_samll:[five_controls],
+          homeOfwork: false
         })
       },
-      animation_small: function(){
-        console.log('small-----')
-        let height = this.data.video_height
-        let width = this.data.video_width
-        animation.opacity(1).height(height - 300).step()
+      // 隐藏提交行程code
+      hideCode(){
+        this.hideSelectHomeOfWork()
         this.setData({
-          animationData: animation.export(),
-          controls: [{
-            id: 1,
-            iconPath: '/resources/location.png',
-            position: {
-              left: width/2,
-              top: height - 400,
-              width: 20,
-              height: 20
-            },
-            clickable: true
-          }]
-        })
+          homeOfwork: true
+        }) 
       },
-      onclick_view(){
-        let click = !this.data.click
-        click ? this.animation_big() : this.animation_small()
-        console.log(click,'------clcik')
+      hideSelectHomeOfWork(){
+        const hideSelectHomeOfWork_animation = animation
+        hideSelectHomeOfWork_animation.opacity(0).height(1).step()
         this.setData({
-          click: click
+          selectJourney_animation: hideSelectHomeOfWork_animation.export()
         })
       },
-      regionchange(e) {
-        console.log(e.type)
-        if(e.type == 'end'){
-          this.mapCtx.getCenterLocation({
-          success: function(res){
-            console.log(res.longitude,'----111')
-            console.log(res.latitude,'----222')
-          }
-        })
-        }
-      },
+      // 改变中心点附近的乘客
+      // regionchange(e) {
+      //   let self = this
+      //   if(e.type == 'end'){
+      //     this.mapCtx.getCenterLocation({
+      //     success: function(res){
+      //       self.postNearbyOfPeople(res.latitude, res.longitude)
+      //     }
+      //   })
+      //   }
+      // },
       markertap(e) {
         console.log(e.markerId)
       },
@@ -139,5 +210,38 @@ Page({
         default:
           console.log('右边点')
         }
+      },
+      postNearbyOfPeople(lat, lon){
+        let location = []
+        let markers_clone = []
+        location.push(lon, lat)
+        let parmas = Object.assign({}, {location: location})
+        driver_api.postNearbyOfPeople({
+          data: parmas
+        }).then(json => {
+          let data = json.data.persons
+          const { markers } = this.data
+          data && data.map(mak => {
+            markers_clone.push({
+              iconPath: mak.role == 0 ? '../images/icon_map_men@3x.png' : '../images/icon_map_car@3x.png',
+              id: 0,
+              longitude: mak.gaodeLocation[0],
+              latitude: mak.gaodeLocation[1],
+              width: mak.role == 0 ? 50 : 30,
+              height: 50,
+              title: '第一个',
+              anchor: {x: .5, y: .5}
+            })
+            this.setData({
+              markers: markers_clone
+            })
+          })
+        })
+      },
+      durationChange: function(e) {
+        console.log(e,'----------e')
+        this.setData({
+          duration: e.detail.value
+        })
       }
     })
