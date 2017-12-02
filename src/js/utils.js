@@ -94,6 +94,7 @@ export const getStorage = (key) => {
 }
 
 export const setEntities = (options = {}) => {
+  console.log(options,'----------options')
   const app = getApp()
   if (!options) {
     return

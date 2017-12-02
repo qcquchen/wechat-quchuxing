@@ -7,7 +7,6 @@
 		bindcontroltap="controltap" 
 		markers="{{ markers }}" 
 		bindmarkertap="markertap" 
-		polyline="{{ polyline }}" 
 		show-location 
 		style="width: 100%; height: 100%;"
 		></map>
@@ -17,12 +16,11 @@
 		longitude="{{ longitude }}" 
 		latitude="{{ latitude }}" 
 		scale="14" 
+		markers="{{ samll_markers }}" 
 		bindcontroltap="controltap" 
 		bindmarkertap="markertap" 
 		polyline="{{ polyline }}" 
-		bindregionchange="regionchange" 
 		controls="{{ controls_samll }}"
-		show-location 
 		style="width: 100%; height: 100%;"
 		bindtap="hideCode"
 		></map>
@@ -30,69 +28,73 @@
 <view class="form_journey" animation="{{ !homeOfwork ? selectJourney_animation : '' }}">
 	<view hidden="{{ hideOfShow_type != 'form' }}">
 		<view class="select_identity">
-			<view class="select_identity_active">乘客</view>
-			<view>车主</view>
-		</view>
-		<view class="select_destination">
-			<view>中关村创业大厦</view>
-			<view>到</view>
-			<view>中关村创业大厦</view>
+			<view class="{{ switch_identity == 'passenger' ? 'select_identity_active' : ''}}" bindtap="passenger">乘客</view>
+			<view class="{{ switch_identity == 'Owners' ? 'select_identity_active' : ''}}" bindtap="owners">车主</view>
 		</view>
 		<view class="select_multiSelect">
-			<picker mode="time" value="{{time}}" start="09:01" end="21:01" bindchange="bindPickerChange">
+			<picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{timeIndex}}" range="{{timeArray}}">
 				<view class="select_tiem">
 						<view class="icon">
-							<image></image>
+							<image src="../images/btn_card_time@3x.png"></image>
 						</view>
 						<view class="common_select">
 							<view>出发时间</view>
 						    	<view class="time">
-						      	{{time}}
-						    	</view>
+							      {{timeArray[0][timeIndex[0]]}}{{timeArray[1][timeIndex[1]]}}{{timeArray[2][timeIndex[2]]}}
+							    </view>
 						</view>
 				</view>
 		    </picker>
-			<picker bindchange="bindPickerChange" value="{{seat_number_index}}" range="{{seat_number}}">
+			<picker bindchange="bindPickerChange_Seats" value="{{seat_number_index}}" range="{{seat_number}}">
 				<view class="select_tiem select_tiem_noBorder">
 					<view class="icon">
-						<image></image>
+						<image src="../images/btn_card_seat@3x.png"></image>
 					</view>
 					<view class="common_select">
-						<view>座位数</view>
-					    	<view class="time">
-					      	{{seat_number[seat_number_index]}}
-					    	</view>
+						<block wx:if="{{ switch_identity == 'passenger' }}">
+							<view>乘车人数</view>
+						</block>
+						<block wx:else>
+							<view>座位数量</view>
+						</block>
+				    	<view class="time">
+				      	{{seat_number[seat_number_index]}}
+				    	</view>
 					</view>
 				</view>
 		    </picker>
-			<view class="select_tiem">
-				<view class="icon">
-					<image></image>
-				</view>
-				<view class="common_select">
-					<view>选择路线</view>
-			    	<view class="time">
-			    		时间最短
-			    	</view>
-				</view>
-			</view>
-			<picker bindchange="bindPickerChange" value="{{select_price_index}}" range="{{select_price}}">
-				<view class="select_tiem select_tiem_noBorder">
+		    <block wx:if="{{ switch_identity != 'passenger' }}">
+				<view class="select_tiem" bindtap="selectLine">
 					<view class="icon">
-						<image></image>
+						<image src="../images/btn_card_line@3x.png"></image>
 					</view>
 					<view class="common_select">
-						<view>票价 (元 / 位)</view>
-					    	<view class="time">
-					      	{{select_price[select_price_index]}}
-					    	</view>
+						<view>选择路线</view>
+				    	<view class="time">
+				    		{{ strategy_active }}
+				    	</view>
 					</view>
 				</view>
-		    </picker>
-		</view>
-		<view class="commit_journey">
-			<view class="call_off">稍后</view>
-			<view class="affirm">确认</view>
+				<picker bindchange="bindPickerChange_Price" value="{{select_price_index}}" range="{{select_price}}">
+					<view class="select_tiem select_tiem_noBorder">
+						<view class="icon">
+							<image src="../images/btn_card_money@3x.png"></image>
+						</view>
+						<view class="common_select">
+							<view>票价 (元 / 位)</view>
+						    	<view class="time">
+						      	{{select_price[select_price_index]}} 元/位
+						    	</view>
+						</view>
+					</view>
+			    </picker>
+		    </block>
+		    <block wx:if="{{ btn_hideOfShow == 'hide' }}">
+				<view class="commit_journey" hidden="{{ }}">
+					<view class="call_off">稍后</view>
+					<view class="affirm" bindtap="commit_journey">确认</view>
+				</view>
+			</block>
 		</view>
 	</view>
 	<view style="position: relative;" hidden="{{ hideOfShow_type != 'info' }}">
@@ -157,19 +159,171 @@
 			</view>
 		</view>
 	</view>
+	<view class="match" hidden="{{ match }}">
+		<view class="match_switch">
+			<view class="{{ match_active == 'car' ? 'watch_switch_active' : '' }}" bindtap="matchCar">顺路车主</view>
+			<view class="{{ match_active == 'people' ? 'watch_switch_active' : '' }}" bindtap="matchPeople">顺路乘客</view>
+		</view>
+		<block wx:if="{{ match_active == 'car' }}">
+			<block wx:if="{{isMatchingTravel != 1}}">
+				<view class="search_match">
+					<view class="loading_img">
+						<image animation="{{ rotate_animation }}" src="../images/icon_seaching@3x.png"></image>
+					</view>
+					<view class="loading_text">小趣仍在寻找…看看同路乘客吧</view>
+					<view class="watch_time">明天10:30出发</view>
+				</view>
+			</block>
+			<block wx:else>
+				<view class="car_acroll">
+					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
+						<view class="car_list car_list_active">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+					</scroll-view>
+					<view class="car_info">
+						<view class="car_info_left">
+							<view class="match_car_name">
+								<view class="match_name">王晓明</view>
+								<view class="match_old">34岁</view>
+								<view class="match_time">10分钟前</view>
+							</view>
+							<view class="match_car_code"><text>京A8***8</text> 奥迪 银色</view>
+						</view>
+						<view class="car_info_right">
+							<view class="match_time">今天 08:30</view>
+							<view class="match_seats">
+								<view>座位数</view>
+								<view class="match_seats_img">
+									<image></image>
+								</view>
+								<view class="match_seats_img">
+									<image></image>
+								</view>
+								<view class="match_seats_img">
+									<image></image>
+								</view>
+								<view class="match_seats_img">
+									<image></image>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</block>
+		</block>
+		<block wx:else>
+			<block wx:if="{{ isHaveSeats != 1 }}">
+				<view class="search_match">
+					<view class="loading_img">
+						<image animation="{{ rotate_animation }}" src="../images/icon_seaching@3x.png"></image>
+					</view>
+					<view class="loading_text">小趣仍在寻找…还是去看车主吧</view>
+					<view class="watch_time">明天10:30出发</view>
+				</view>
+			</block>
+			<block wx:else>
+				<view class="car_acroll">
+					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
+						<view class="car_list car_list_active">
+							<image src="../images/Artboard@1x.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+						<view class="car_list">
+							<image src="../images/img_mine.jpg"></image>
+						</view>
+					</scroll-view>
+					<view class="car_info">
+						<view class="car_info_left">
+							<view class="match_car_name">
+								<view class="match_name">王晓明</view>
+								<view class="match_old">34岁</view>
+								<view class="match_time">10分钟前</view>
+							</view>
+							<view class="ride_number">乘车人数<text class="setas_people">2</text></view>
+						</view>
+						<view class="car_info_right">
+							<view class="match_time">今天 08:30</view>
+						</view>
+					</view>
+				</view>
+			</block>
+		</block>
+		<block wx:if="{{ btn_hideOfShow == 'hide' }}">
+			<block wx:if="{{isHaveSeats != 1 && isMatchingTravel != 1}}">
+				<view class="share_It">
+					<button class="share_btn">
+						<image src="../images/btn_share@3x.png"></image>
+						<view>分享行程 求解决</view>
+					</button>
+				</view>
+			</block>
+			<block wx:elif="{{isMatchingTravel == 1 && match_active == 'car'}}">
+				<view class="match_car_btn">
+					<view class="match_car_share">
+						<image src="../images/btn_share@3x.png"></image>
+					</view>
+					<view class="match_car_phone">
+						<image src="../images/btn_phone@3x.png"></image>
+					</view>
+					<view class="match_car_submit">10元 订座</view>
+				</view>
+			</block>
+			<block wx:elif="{{isHaveSeats == 1 && match_active == 'people'}}">
+				<view class="share_It">
+					<button class="share_btn">
+						<image src="../images/icon_like@3x.png"></image>
+						<view>关注</view>
+					</button>
+				</view>
+			</block>
+		</block>
+	</view>
 </view>
 
-<swiper bindchange="durationChange" hidden="{{ !homeOfwork }}">
+<swiper indicator-dots="true" bindchange="durationChange" hidden="{{ !homeOfwork }}">
 	<swiper-item>
 		<view class="tab_index">
 			<view class="index_common selct_work_home">
-				<view class="select" data-type="form" bindtap="goHomeOfWork">
-					<image></image>
+				<view class="select" data-id="2" data-type="form" bindtap="goHomeOfWork">
+					<image src="../images/icon_home@3x.png"></image>
 					<view>回家</view>
 				</view>
 				<view>|</view>
-				<view class="select" data-type="form" bindtap="goHomeOfWork">
-					<image></image>
+				<view class="select" data-id="1" data-type="form" bindtap="goHomeOfWork">
+					<image src="../images/icon_company@3x.png"></image>
 					<view>公司</view>
 				</view>
 			</view>
@@ -191,5 +345,9 @@
 		</swiper-item>
 	</block>
 </swiper>
-<view class="tab_left"></view>
-<view class="tab_right"></view>
+<!-- <view class="tab_left">
+	<image src="../images/icon_card_left@3x.png"></image>
+</view>
+<view class="tab_right">
+	<image src="../images/icon_card_left@3x.png"></image>
+</view> -->

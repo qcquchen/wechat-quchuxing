@@ -7,7 +7,6 @@ import * as constants from './js/constants'
 
 var appConfig = {
     onLaunch: function () {
-      console.log('小程序生成完毕！')
       this.getWechatInfo()
     },
     getWechatInfo () {
@@ -28,16 +27,12 @@ var appConfig = {
               return that.weChatSignin(userInfo)
             },
             fail () {
-              wx.reLaunch({
-                url: '/src/unauthorized/unauthorized'
-              })
-              // reject()
+              console.log('验证失败')
             }
           })
         },
         fail (err) {
           console.log('wx.login  error ', err)
-          // reject()
         }
       })
     },
@@ -53,9 +48,6 @@ var appConfig = {
         deviceInfo : wx.getSystemInfoSync()
       }
     },
-    _login () {
-
-    },
     weChatSignin (options, cb) {
       const that = this
       const { code } = options
@@ -64,8 +56,28 @@ var appConfig = {
       driver_api.postWechatLogin({
         data: parmas
       }).then(login_json => {
-        console.log(login_json,'------login_json')
+        let openId = login_json.data.result.Openid
+        this.postFindLogin(openId)
       }) 
+    },
+    postFindLogin(openId){
+      driver_api.postFindLogin({
+        data: {
+          openId: openId
+        }
+      }).then(json => {
+        let { status } = json.data
+        if(status != -1){
+          json.data.openId = openId
+          this.globalData.entities.loginInfo = json.data
+          this.globalData.appLaunch = true
+        }else{
+          this.globalData.appLaunch = false
+          this.globalData.entities.loginInfo = {
+            openId: openId
+          }
+        }
+      })
     }
 }
 

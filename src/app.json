@@ -1,6 +1,11 @@
 {
   "pages": [
-    "src/index"
+    "src/index",
+
+    "src/login/login",
+    "src/setAddress/setAddress",
+    "src/setAddress/searchAddress",
+    "src/ownersSelectLine/ownersSelectLine"
   ],
   "window": {
     "navigationBarTextStyle": "white",

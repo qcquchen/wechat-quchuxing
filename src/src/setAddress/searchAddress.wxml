@@ -1,0 +1,19 @@
+<view class="header">
+	<view class="city">{{ city }}</view>
+	<view class="search">
+		<input bindinput="searchIn" placeholder="输入您的{{ type == 'home' ? '家庭地址' : '公司地址' }}" />
+	</view>
+	<view class="clear">x</view>
+</view>
+
+<view class="container">
+	<view class="data_list" bindtouchstart="bindSearch" data-keywords="{{item.name}}" data-location="{{ item.location }}" wx:for-items="{{ tips }}" wx:key="{{ index }}">
+		<view class="list_style">
+			<view></view>
+		</view>
+		<view class="list_text">
+			<view>{{ item.name }}</view>
+			<view>{{ item.district }}</view>
+		</view>
+	</view>
+</view>

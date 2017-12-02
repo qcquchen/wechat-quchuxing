@@ -1,6 +1,6 @@
 let extConfig = wx.getExtConfigSync? wx.getExtConfigSync(): {}
 
-const API_ROOT = extConfig.host || `https://test.passenger.quchuxing.com.cn`
+const API_ROOT = extConfig.host || `https://t1.passenger.quchuxing.com.cn`
 
 const api = require('./apiUtils')
 
@@ -8,5 +8,13 @@ import { _apiPOST, _apiGET, _apiPUT, _apiDELETE } from './apiUtils'
 
 const REQUEST_TYPE = ['GET','POST','PUT','DELETE']
 
-// export const getDomainUrl = (optioins) => _apiGET(`${API_ROOT}/uploads/token?bucket=kuban`,optioins)
 // export const getActivitiesInfo = (id, options) => _apiGET(`${API_ROOT}/activities/${id}`,options)
+// 
+// 乘客最近行程 /travel/latestOne
+export const getPassengerRecentTrip = (options) => _apiPOST(`${API_ROOT}/travel/latestOne`, options)
+
+// 乘客创建行程 /travel/passenger/create
+export const postJounrey = (options) => _apiPOST(`${API_ROOT}/travel/passenger/create`, options)
+
+// 乘客匹配车主 /travel/matching
+export const postMatchCompany = (options) => _apiPOST(`${API_ROOT}/travel/matching`, options)
