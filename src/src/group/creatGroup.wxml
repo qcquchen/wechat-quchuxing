@@ -1,0 +1,8 @@
+<view class="body">
+	<view class="header">创建群(群号778899)</view>
+	<view class="from">
+		<view class="input">
+			<input placeholder="这是一个可以自动聚焦的input" />
+		</view>
+	</view>
+</view>

@@ -1,0 +1,91 @@
+<view style="padding: 15px;">
+	<view class="header">
+		<view class="mine_img">
+			<image src="../../images/img_mine.jpg"></image>
+		</view>
+		<view class="mine_info">
+			<view class="mine_btn">
+				<view>分享主页</view>
+				<view>更多</view>
+			</view>
+			<view class="mine_history">
+				<view class="history_list">
+					<view>10</view>
+					<view>乘车</view>
+				</view>
+				<view class="history_list">
+					<view>34</view>
+					<view>发车</view>
+				</view>
+				<view class="history_list">
+					<view>100</view>
+					<view>粉丝</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<view class="mine_details">
+		<view class="mine_name"><text>王晓明</text>资料完善度70%</view>
+		<view class="mine_sex">34岁</view>
+	</view>
+</view>
+
+<view class="switch">
+	<view class="switch_list switch_list_active">行程4</view>
+	<view class="switch_list">关注10</view>
+	<view class="switch_list">资料</view>
+</view>
+
+<view class="content">
+	<!-- 行程 -->
+	<view class="strokes">
+		<view class="stroke_list">
+			<view class="stroke_list_left">
+				<view class="stroke_title">明天10:30准时上车哦</view>
+				<view class="stroke_location">
+					<view class="loc_style">
+						<image src=""></image>
+					</view>
+					<view class="loc_addres">家</view>
+					<view class="loc_downAddress">金台路上车</view>
+				</view>
+				<view class="stroke_location">
+					<view class="loc_style">
+						<image src=""></image>
+					</view>
+					<view class="loc_addres">公司</view>
+					<view class="loc_downAddress">上地地铁站下车</view>
+				</view>
+				<view class="number">乘车人数<text>2</text></view>
+			</view>
+			<view class="stroke_list_right">
+				<image class="car_avtoer"></image>
+				<view class="car_info">
+					<view>王晓明</view>
+					<view>京A88888</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<view class="strokes">
+		<view class="stroke_list">
+			<view class="stroke_list_left">
+				<view class="stroke_title">明天10:30发车</view>
+				<view class="stroke_location">
+					<view class="loc_style">
+						<image src=""></image>
+					</view>
+					<view class="loc_addres">家</view>
+				</view>
+				<view class="stroke_location">
+					<view class="loc_style">
+						<image src=""></image>
+					</view>
+					<view class="loc_addres">公司</view>
+				</view>
+			</view>
+			<view class="stroke_list_right">
+			</view>
+		</view>
+	</view>
+</view>

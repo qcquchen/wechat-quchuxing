@@ -1,0 +1,121 @@
+<view class="mine_group">
+	<view class="mine_title">我的群</view>
+	<view class="mine_list">
+		<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+			<view class="mine_group_li">
+				<view class="mine_group_img">百</view>
+				<view class="mine_group_name">百度大厦</view>
+				<view class="mine_group_number">200人已加入</view>
+			</view>
+		</scroll-view>
+	</view>
+</view>
+
+<view class="nearby_group">
+	<view class="nearby_group_title">附近的热门群</view>
+	<view class="nearby_group_list">
+		<view class="nearby_li">
+			<view class="nearby_li_left">
+				<view class="nearby_img">百</view>
+				<view class="nearby_text">
+					<view>中关村创业大厦</view>
+					<view class="nearby_code">
+						<view>公司</view>
+						<view>200人</view>
+						<view>0.50km</view>
+					</view>
+				</view>
+			</view>
+			<view class="nearby_li_right">
+				<view class="pass_img">
+					<image></image>
+				</view>
+				<view class="pass_text">加入</view>
+			</view>
+		</view>
+		<view class="nearby_li">
+			<view class="nearby_li_left">
+				<view class="nearby_img">百</view>
+				<view class="nearby_text">
+					<view>中关村创业大厦</view>
+					<view class="nearby_code">
+						<view>公司</view>
+						<view>200人</view>
+						<view>0.50km</view>
+					</view>
+				</view>
+			</view>
+			<view class="nearby_li_right">
+				<view class="pass_img">
+					<image></image>
+				</view>
+				<view class="pass_text">加入</view>
+			</view>
+		</view>
+		<view class="nearby_li">
+			<view class="nearby_li_left">
+				<view class="nearby_img">百</view>
+				<view class="nearby_text">
+					<view>中关村创业大厦</view>
+					<view class="nearby_code">
+						<view>公司</view>
+						<view>200人</view>
+						<view>0.50km</view>
+					</view>
+				</view>
+			</view>
+			<view class="nearby_li_right">
+				<view class="pass_img">
+					<image></image>
+				</view>
+				<view class="pass_text">加入</view>
+			</view>
+		</view>
+		<view class="nearby_li">
+			<view class="nearby_li_left">
+				<view class="nearby_img">百</view>
+				<view class="nearby_text">
+					<view>中关村创业大厦</view>
+					<view class="nearby_code">
+						<view>公司</view>
+						<view>200人</view>
+						<view>0.50km</view>
+					</view>
+				</view>
+			</view>
+			<view class="nearby_li_right">
+				<view class="pass_img">
+					<image></image>
+				</view>
+				<view class="pass_text">加入</view>
+			</view>
+		</view>
+	</view>
+</view>
+
+<view class="creat_group">建群</view>

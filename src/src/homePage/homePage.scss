@@ -1,0 +1,172 @@
+.header{
+	display: flex;
+	justify-content: space-between;
+	.mine_img{
+		>image{
+			width: 100px;
+			height: 100px;
+			background: #cccccc;
+			border-radius: 10px;
+		}
+	}
+	.mine_info{
+		.mine_btn{
+			display: flex;
+			align-items: center;
+			text-align: center;
+			>view{
+				padding: 3px 10px;
+				border-radius: 8px;
+				border: 1px solid #DADDE2;
+				font-size: 13px;
+				color: #484848;
+				font-weight: 600;
+			}
+			>view:first-child{
+				margin-right: 8px;
+			}
+		}
+		.mine_history{
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			margin-top: 15px;
+			.history_list{
+				font-size: 13px;
+				color: #737373;
+				>view:first-child{
+					font-size: 20px;
+					font-weight: 600;
+					color: #484848;
+				}
+			}
+		}
+	}
+}
+.mine_details{
+	/*position: relative;*/
+	.mine_name{
+		font-size: 12px;
+		color: #737373;
+		>text{
+			font-size: 20px;
+			font-weight: 600;
+			color: #484848;
+			margin-right: 5px;
+		}
+	}
+	.mine_sex{
+		background: #73C2FF;
+		font-size: 10px;
+		color: #ffffff;
+		padding: 0 5px;
+		border-radius: 10px;
+		/*position: absolute;*/
+		float: left;
+		margin-top: -3px;
+	}
+}
+
+.switch{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	border-bottom: 1px solid #e1e1e1;
+	box-shadow: 0px 2px 1px #cccccc;
+	.switch_list{
+		padding: 10px 0;
+		border-bottom: 2px solid #ffffff;
+		font-size: 16px;
+		color: #737373;
+	}
+	.switch_list_active{
+		border-bottom: 2px solid #484848 !important;
+		color: #484848;
+	}
+}
+
+.content{
+	background: #F7F6F6;
+	.strokes{
+		.stroke_list{
+			border-radius: 15px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border: 1px solid #e1e1e1;
+			background: #ffffff;
+			margin-bottom: 15px;
+			.stroke_list_left{
+				padding: 10px;
+				.stroke_title{
+					font-size: 16px;
+					color: #484848;
+					font-weight: 600;
+				}
+				.stroke_location{
+					display: flex;
+					align-items: center;
+					.loc_style{
+						width: 10px;
+						height: 10px;
+						margin-right: 5px;
+						>image{
+							display: block;
+							width: 100%;
+							height: 100%;
+							background: #cccccc;
+							border-radius: 100%;
+						}
+					}
+					.loc_addres{
+						font-size: 13px;
+						font-weight: 600;
+						color: #484848;
+					}
+					.loc_downAddress{
+						color: #737373;
+						font-size: 10px;
+						margin-left: 10px;
+					}
+				}
+				.number{
+					font-size: 10px;
+					color: #737373;
+					display: flex;
+					align-items: center;
+					>text{
+						font-size: 17px;
+						color: #484848;
+						display: block;
+						font-weight: 600;
+						margin-left: 5px;
+					}
+				}
+			}
+			.stroke_list_right{
+				padding: 10px;
+				.car_avtoer{
+					display: block;
+					width: 60px;
+					height: 60px;
+					border-radius: 8px;
+					background: #cccccc;
+				}
+				.car_info{
+					text-align: center;
+					>view:first-child{
+						font-size: 13px;
+						color: #484848;
+					}
+					>view:last-child{
+						background: linear-gradient(to right, #00C6FF , #4287FF);
+						border-radius: 15px;
+						color: #ffffff;
+						font-size: 10px;
+					}
+				}
+			}
+		}
+	}
+}

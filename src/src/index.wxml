@@ -6,6 +6,7 @@
 		controls="{{ controls }}" 
 		bindcontroltap="controltap" 
 		markers="{{ markers }}" 
+		bindregionchange="regionchange"
 		bindmarkertap="markertap" 
 		show-location 
 		style="width: 100%; height: 100%;"
@@ -171,58 +172,35 @@
 						<image animation="{{ rotate_animation }}" src="../images/icon_seaching@3x.png"></image>
 					</view>
 					<view class="loading_text">小趣仍在寻找…看看同路乘客吧</view>
-					<view class="watch_time">明天10:30出发</view>
 				</view>
 			</block>
 			<block wx:else>
 				<view class="car_acroll">
 					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
-						<view class="car_list car_list_active">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
-						</view>
-						<view class="car_list">
-							<image src="../images/img_mine.jpg"></image>
+						<view wx:for-items="{{ match_cars }}" wx:key="{{ index }}" data-id="{{ item.travelId }}" bindtap="matchCarsInfo" class="car_list {{ item.travelId == car_id ? 'car_list_active' : ''}}">
+							<image src="{{ item.driverPicture }}"></image>
 						</view>
 					</scroll-view>
 					<view class="car_info">
 						<view class="car_info_left">
 							<view class="match_car_name">
-								<view class="match_name">王晓明</view>
-								<view class="match_old">34岁</view>
-								<view class="match_time">10分钟前</view>
+								<view class="match_name">{{ matchCar.driverName }}</view>
+								<view class="match_old">{{ matchCar.sex }}岁</view>
+								<view class="match_time">{{ matchCar.lastTimeOnline }}</view>
 							</view>
-							<view class="match_car_code"><text>京A8***8</text> 奥迪 银色</view>
+							<view class="match_car_code">{{ matchCar.car }}</view>
 						</view>
 						<view class="car_info_right">
-							<view class="match_time">今天 08:30</view>
+							<view class="match_time">{{ matchCar.startTimeTxt }}</view>
 							<view class="match_seats">
 								<view>座位数</view>
-								<view class="match_seats_img">
-									<image></image>
-								</view>
-								<view class="match_seats_img">
-									<image></image>
-								</view>
-								<view class="match_seats_img">
-									<image></image>
-								</view>
-								<view class="match_seats_img">
-									<image></image>
+								<view class="match_seats_img" wx:for-items="{{ seat_img }}" wx:key="{{ index }}">
+									<block wx:if="{{ item.type }}">
+										<image src="{{ item.img_fasle }}"></image>
+									</block>
+									<block wx:else>
+										<image src="{{ item.img_true }}"></image>
+									</block>
 								</view>
 							</view>
 						</view>
@@ -237,7 +215,6 @@
 						<image animation="{{ rotate_animation }}" src="../images/icon_seaching@3x.png"></image>
 					</view>
 					<view class="loading_text">小趣仍在寻找…还是去看车主吧</view>
-					<view class="watch_time">明天10:30出发</view>
 				</view>
 			</block>
 			<block wx:else>
@@ -282,7 +259,7 @@
 			</block>
 		</block>
 		<block wx:if="{{ btn_hideOfShow == 'hide' }}">
-			<block wx:if="{{isHaveSeats != 1 && isMatchingTravel != 1}}">
+			<block wx:if="{{!isMatch && isMatchingTravel != 1}}">
 				<view class="share_It">
 					<button class="share_btn">
 						<image src="../images/btn_share@3x.png"></image>
@@ -298,10 +275,10 @@
 					<view class="match_car_phone">
 						<image src="../images/btn_phone@3x.png"></image>
 					</view>
-					<view class="match_car_submit">10元 订座</view>
+					<view class="match_car_submit">{{ matchCar.price }}元 订座</view>
 				</view>
 			</block>
-			<block wx:elif="{{isHaveSeats == 1 && match_active == 'people'}}">
+			<block wx:elif="{{isMatch && match_active == 'people'}}">
 				<view class="share_It">
 					<button class="share_btn">
 						<image src="../images/icon_like@3x.png"></image>

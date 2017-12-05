@@ -16,12 +16,12 @@ var animation = wx.createAnimation({
 
 var first_controls = Object.assign({}, {
   id: 1,
-  iconPath: '../images/icon_circle_like_comment@3x.png',
+  iconPath: '../images/icon_map_star@3x.png',
   position: {
     left: 0,
     top: 0,
-    width: 20,
-    height: 20
+    width: 35,
+    height: 50
   },
   clickable: true
 })
@@ -43,7 +43,7 @@ var three_controls = Object.assign({}, {
   iconPath: '../images/icon_home_group@3x.png',
   position: {
     left: 10,
-    top: 80,
+    top: 15,
     width: 50,
     height: 50
   },
@@ -55,7 +55,7 @@ var four_controls = Object.assign({}, {
   iconPath: '../images/icon_home_msg@3x.png',
   position: {
     left: 10,
-    top: 145,
+    top: 80,
     width: 50,
     height: 50
   },
@@ -104,7 +104,31 @@ Page({
         strategy_active: '时间最短',
         strategy: 0,
         isHaveSeats: 0,
-        isMatchingTravel: 0
+        isMatchingTravel: 0,
+        isMatch: false,
+        match_cars: [],
+        matchCar: {},
+        car_id: null,
+        now_time: moment().toDate().pattern('yyyy-MM-dd'),
+        now_hour: moment().hour(),
+        now_minute: moment().minute(),
+        seat_img: [{
+          img_true: '../images/icon_seat_have@3x.png',
+          img_false: '../images/icon_seat@3x.png',
+          type: true
+        },{
+          img_true: '../images/icon_seat_have@3x.png',
+          img_false: '../images/icon_seat@3x.png',
+          type: true
+        },{
+          img_true: '../images/icon_seat_have@3x.png',
+          img_false: '../images/icon_seat@3x.png',
+          type: true
+        },{
+          img_true: '../images/icon_seat_have@3x.png',
+          img_false: '../images/icon_seat@3x.png',
+          type: true
+        }]
       },
       onShow(){
         const { strategy } = app.globalData.entities
@@ -141,13 +165,14 @@ Page({
             first_controls.position.left = res.windowWidth/2
             first_controls.position.top = (res.windowHeight - 84)/2
             two_controls.position.left = res.windowWidth - 65
+            two_controls.position.top = res.windowHeight - ( 84 + 65 )
             three_controls.position.left = res.windowWidth - 65
             four_controls.position.left = res.windowWidth - 65
             five_controls.position.top = res.windowHeight - ( 84 + 65 )
             self.setData({
               video_width: res.windowWidth,
               video_height: res.windowHeight - 84,
-              controls:[two_controls, three_controls, four_controls, five_controls]
+              controls:[first_controls, two_controls, three_controls, four_controls, five_controls]
             })
           }
         })
@@ -262,7 +287,7 @@ Page({
         this.showSelectHomeOfWork()
       },
       commit_journey:function(){
-        const { timeIndex, timeArray, seat_number_index, select_price_index, location_company, addr_company,  travelType, startLocation, startAddress, addr_home, location_home, switch_identity, select_price, strategy } = this.data
+        const { timeIndex, timeArray, seat_number_index, select_price_index, location_company, addr_company,  travelType, startLocation, startAddress, addr_home, location_home, switch_identity, select_price, strategy, now_time, now_hour, now_minute } = this.data
         let new_timeArray = []
         const { token } = app.globalData.entities.loginInfo
         SELECT_TIME_DAY.map((json, index) => {
@@ -272,8 +297,29 @@ Page({
         let new_hour = SELECT_TIME_HOUR[timeArray[1].findIndex(json => json == timeArray[1][timeIndex[1]])]
         let new_minute = SELECT_TIME_MINUTE[timeArray[2].findIndex(json => json == timeArray[2][timeIndex[2]])]
         let new_time = new_day + ' ' + new_hour + ':' + new_minute + ':00' 
+        if(new_hour < 10 ){
+          new_time = new_day + ' ' + '0' + new_hour + ':' + new_minute + ':00' 
+        }
+        if(new_minute < 10){
+          new_time = new_day + ' ' + '0' + new_hour + ':' + '0' + new_minute + ':00' 
+        }
         let start_Location = startLocation.split(',').map(json => Number(json))
         let parmas = {}
+        if(moment(now_time).isSame(new_day)){
+          if(new_hour < now_hour){
+            wx.showModal({
+              title: '提示',
+              content: '出发时间不能小于当前时间',
+              showCancel: false,
+              success: function(res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                }
+              }
+            })
+            return
+          }
+        }
         if(switch_identity == 'passenger'){
           parmas = Object.assign({}, {token: token}, {startTimes: [new_time]}, {seats: Number(seat_number_index) + 1}, {travelType: Number(travelType)}, {start: start_Location}, {startAddress: startAddress}, {end: location_home}, {endAddress: addr_home}, {isWX: true})
           this.postJounrey(parmas)
@@ -298,6 +344,7 @@ Page({
             hideOfShow_type: 'match'
           })
           this.postMatchCompany(passengerTravelId)
+          this.postMatchPeople(passengerTravelId)
         }, e => {
           wx.showToast({
             title: '发布失败',
@@ -306,19 +353,66 @@ Page({
           })
         })
       },
+      // 匹配车主
       postMatchCompany(id){
         const { token } = app.globalData.entities.loginInfo
         let parmas = Object.assign({}, {token: token}, {passengerTravelId: id}, {pageNum: 1})
         let match = setInterval(() =>{
           passenger_api.postMatchCompany({data: parmas}).then(json => {
             const { matchTravel } = json.data
-            if(matchTravel.isHaveSeats == 1 &&  matchTravel.isMatchingTravel == 1){
+            if(matchTravel.isMatchingTravel == 1){
               clearInterval(match)
+              let data = json.data.matchTravel.travelResults
               this.setData({
-                isHaveSeats: matchTravel.isHaveSeats,
-                isMatchingTravel: matchTravel.isMatchingTravel
+                isMatchingTravel: matchTravel.isMatchingTravel,
+                match_cars: data
               })
-              console.log('-----------匹配到了')
+              this.matchCarsInfo(null, data[0].travelId)
+            }
+          }, e=>{
+            wx.showToast({
+              title: '匹配失败',
+              icon: 'success',
+              duration: 2000
+            })
+          })
+        }, 5000) 
+      },
+      matchCarsInfo(e, car_id){
+        const { match_cars, seat_img } = this.data
+        let id =  e ? e.currentTarget.dataset.id : car_id
+        let new_match = match_cars.find(data => data.travelId == id)
+        seat_img.map((json, index) => {
+          if((index + 1) <= new_match.surplusSeats){
+            json.type = false
+          }
+        })
+        console.log(match_cars,'-------------match_cars')
+        this.setData({
+          matchCar: new_match,
+          car_id: id,
+          seat_img: seat_img
+        })
+      },
+      // 匹配乘客
+      postMatchPeople(travelId){
+        const { token } = app.globalData.entities.loginInfo
+        const { switch_identity } = this.data
+        let role = switch_identity == 'passenger' ? 0 : 1
+        let parmas = Object.assign({}, { token: token }, { role: role }, { travelId: travelId }, { pageNum: 1 })
+        let match = setInterval(() =>{
+          passenger_api.postMatchPeople({data: parmas}).then(json => {
+            // 匹配过程处理
+            const { isMatch, matchTravelPassengers } = json.data.matchTravelPassengers
+            console.log(json.data,'--------------json.data')
+           if(isMatch){
+              clearInterval(match)
+              let data = json.data.matchTravel.travelResults
+              this.setData({
+                isMatchingTravel: matchTravel.isMatchingTravel,
+                match_cars: data
+              })
+              this.matchCarsInfo(null, data[0].travelId)
             }
           }, e=>{
             wx.showToast({
@@ -355,7 +449,9 @@ Page({
           homeOfwork: true,
           btn_hideOfShow: 'show',
           match: true,
-          timeArray: [SELECT_TIME_DAY, SELECT_TIME_HOUR, SELECT_TIME_MINUTE]
+          timeArray: [SELECT_TIME_DAY, SELECT_TIME_HOUR, SELECT_TIME_MINUTE],
+          isMatchingTravel: 0,
+          isMatch: false,
         }) 
       },
       hideSelectHomeOfWork(){
@@ -365,29 +461,36 @@ Page({
           selectJourney_animation: hideSelectHomeOfWork_animation.export()
         })
       },
-      // 改变中心点附近的乘客
-      // regionchange(e) {
-      //   let self = this
-      //   if(e.type == 'end'){
-      //     this.mapCtx.getCenterLocation({
-      //     success: function(res){
-      //       self.postNearbyOfPeople(res.latitude, res.longitude)
-      //     }
-      //   })
-      //   }
-      // },
+      regionchange(e) {
+        let self = this
+        if(e.type == 'end'){
+          this.mapCtx.getCenterLocation({
+          success: function(res){
+            self.postNearbyOfPeople(res.latitude, res.longitude)
+          }
+        })
+        }
+      },
       markertap(e) {
         console.log(e.markerId)
       },
       controltap(e) {
-        console.log(e.controlId)
         switch(e.controlId)
         {
         case 1:
           console.log('中心点')
           break;
         case 2:
-          console.log('左边点')
+          console.log('跳转到个人主页')
+          wx.navigateTo({
+            url: `/src/homePage/homePage`
+          })
+          break;
+        case 3:
+          console.log('跳转到附近的群')
+          wx.navigateTo({
+            url: `/src/group/group`
+          })
           break;
         default:
           console.log('右边点')
@@ -484,6 +587,19 @@ Page({
           data: parmas
         }).then(json => {
           let data = json.data
+          if(data.status == -5){
+            wx.showModal({
+              title: '提示',
+              content: '您还未完成车主认证',
+              showCancel: false,
+              success: function(res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                }
+              }
+            })
+            return
+          }
           let hour_index = moment(data.startTime).hour()
           if( data.startTime ){
             let data_index = 0
@@ -508,8 +624,10 @@ Page({
             this.setData({
               timeIndex: [data_index, hour_index, minute_index],
               seat_number_index: data.seats - 1,
-              select_price_index: select_price_index
+              select_price_index: select_price_index,
+              switch_identity: 'Owners'
             })
+            this.getLine('Owners')
           }else{
             this.setData({
               timeIndex: [0, hour_index, 0],
@@ -517,10 +635,6 @@ Page({
               select_price_index: 0
             })
           }
-        })
-        this.getLine('Owners')
-        this.setData({
-          switch_identity: 'Owners'
         })
       },
       selectLine:function(){

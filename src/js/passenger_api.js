@@ -18,3 +18,6 @@ export const postJounrey = (options) => _apiPOST(`${API_ROOT}/travel/passenger/c
 
 // 乘客匹配车主 /travel/matching
 export const postMatchCompany = (options) => _apiPOST(`${API_ROOT}/travel/matching`, options)
+
+// 匹配乘客 /travel/matching/passenger
+export const postMatchPeople = (options) => _apiPOST(`${API_ROOT}/travel/matching/passenger`, options)
