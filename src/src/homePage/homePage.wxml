@@ -1,7 +1,7 @@
 <view style="padding: 15px;">
 	<view class="header">
 		<view class="mine_img">
-			<image src="../../images/img_mine.jpg"></image>
+			<image src="{{ userInfo.picture }}"></image>
 		</view>
 		<view class="mine_info">
 			<view class="mine_btn">
@@ -10,23 +10,23 @@
 			</view>
 			<view class="mine_history">
 				<view class="history_list">
-					<view>10</view>
+					<view>{{ userInfo.orderNum }}</view>
 					<view>乘车</view>
 				</view>
 				<view class="history_list">
-					<view>34</view>
+					<view>{{ userInfo.departureNum }}</view>
 					<view>发车</view>
 				</view>
 				<view class="history_list">
-					<view>100</view>
+					<view>{{ userInfo.beCare }}</view>
 					<view>粉丝</view>
 				</view>
 			</view>
 		</view>
 	</view>
 	<view class="mine_details">
-		<view class="mine_name"><text>王晓明</text>资料完善度70%</view>
-		<view class="mine_sex">34岁</view>
+		<view class="mine_name"><text>{{ userInfo.nickName }}</text>资料完善度70%</view>
+		<view class="mine_sex">{{ userInfo.age || '0' }}岁</view>
 	</view>
 </view>
 
@@ -38,53 +38,171 @@
 
 <view class="content">
 	<!-- 行程 -->
-	<view class="strokes">
-		<view class="stroke_list">
-			<view class="stroke_list_left">
-				<view class="stroke_title">明天10:30准时上车哦</view>
-				<view class="stroke_location">
-					<view class="loc_style">
-						<image src=""></image>
-					</view>
-					<view class="loc_addres">家</view>
-					<view class="loc_downAddress">金台路上车</view>
-				</view>
-				<view class="stroke_location">
-					<view class="loc_style">
-						<image src=""></image>
-					</view>
-					<view class="loc_addres">公司</view>
-					<view class="loc_downAddress">上地地铁站下车</view>
-				</view>
-				<view class="number">乘车人数<text>2</text></view>
+	<view class="stroke_list">
+		<view class="list_header">
+			<view class="stroke_title">明天10:30准时上车哦</view>
+			<view class="stroke_type paid">已支付</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
 			</view>
-			<view class="stroke_list_right">
-				<image class="car_avtoer"></image>
-				<view class="car_info">
-					<view>王晓明</view>
-					<view>京A88888</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number">
+					<view class="ride">乘车人数</view>
+					<view class="number">2</view>
+				</view>
+				<view class="payment">
+					<view>实付款:</view>
+					<view>6.00</view>
 				</view>
 			</view>
 		</view>
 	</view>
-	<view class="strokes">
-		<view class="stroke_list">
-			<view class="stroke_list_left">
-				<view class="stroke_title">明天10:30发车</view>
-				<view class="stroke_location">
-					<view class="loc_style">
-						<image src=""></image>
-					</view>
-					<view class="loc_addres">家</view>
+	<view class="stroke_list">
+		<view class="list_header">
+			<view class="stroke_title">明天10:30准时上车哦</view>
+			<view class="stroke_type unpaid">已支付</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
+			</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number">
+					<view class="ride">乘车人数</view>
+					<view class="number">2</view>
 				</view>
-				<view class="stroke_location">
-					<view class="loc_style">
-						<image src=""></image>
-					</view>
-					<view class="loc_addres">公司</view>
+				<view class="payment">
+					<view>实付款:</view>
+					<view>6.00</view>
 				</view>
 			</view>
-			<view class="stroke_list_right">
+		</view>
+	</view>
+
+	<view class="stroke_list">
+		<view class="list_header">
+			<view class="stroke_title">寻找车主中...第一时间通知您</view>
+			<view class="stroke_type">
+				<image></image>
+			</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
+			</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number">
+					<view class="ride">乘车人数</view>
+					<view class="number">2</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<!-- 车主匹配到乘客或者没有匹配到 -->
+	<view class="stroke_list">
+		<view class="list_header">
+			<view class="stroke_title">明天10: 30</view>
+			<view class="stroke_type look_at_the_way">查看顺路乘客</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
+			</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number clear_flex">
+					<view class="ride">座位数</view>
+					<view class="number_img">
+						<image></image>
+						<image></image>
+						<image></image>
+						<image></image>
+					</view>
+				</view>
+				<view class="payment">
+					<view>收入:</view>
+					<view>6.00</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<!-- 车主结束行程 -->
+	<view class="stroke_list" style="opacity: .6;">
+		<view class="list_header">
+			<view class="stroke_title">10月11日 10:30</view>
+			<view class="stroke_type over">已结束</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
+			</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number clear_flex">
+					<view class="ride">座位数</view>
+					<view class="number_img">
+						<image></image>
+						<image></image>
+						<image></image>
+						<image></image>
+					</view>
+				</view>
+				<view class="payment">
+					<view>收入:</view>
+					<view>6.00</view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<!-- 乘客结束行程 -->
+	<view class="stroke_list" style="opacity: .6;">
+		<view class="list_header">
+			<view class="stroke_title">10月11日 10:30</view>
+			<view class="stroke_type over">已结束</view>
+		</view>
+		<view class="list_content">
+			<view class="list_location">
+				<view class="loc_style_up"></view>
+				<view class="loc_address">金台路 <text>上车</text></view>
+			</view>
+			<view class="list_location">
+				<view class="loc_style_down"></view>
+				<view class="loc_address">上地地铁站 <text>下车</text></view>
+			</view>
+			<view class="list_foot">
+				<view class="ride_number">
+					<view class="ride">乘车人数</view>
+					<view class="number">2</view>
+				</view>
+				<view class="payment">
+					<view>实付款:</view>
+					<view>6.00</view>
+				</view>
 			</view>
 		</view>
 	</view>

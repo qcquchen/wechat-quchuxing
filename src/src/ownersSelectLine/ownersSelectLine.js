@@ -52,9 +52,10 @@ Page({
 		this.setData({
 			type: id
 		})
+		console.log(id,'---------------id')
 		util.setEntities({
 	        key: 'strategy',
-	        value: Number(id)
+	        value: String(id)
 	    })
 		this.getLine()
 	},
@@ -74,6 +75,11 @@ Page({
 				strategy && strategy.map(json => {
 					json.distance = json.distance.toFixed(2)
 				})
+				console.log(strategy[0].strategy,'-------------->>>strategy[0].strategy')
+				util.setEntities({
+			        key: 'strategy',
+			        value: String(strategy[0].strategy)
+			    })
 				this.setData({
 		        	new_strategy: strategy
 				})

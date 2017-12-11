@@ -11,7 +11,7 @@ Page({
 	},
 	onLoad(option){
 		let self = this
-		const { id } = option
+		const { id, name } = option
 	    let myAmapFun = new amapFile.AMapWX({key: key})
         myAmapFun.getRegeo({
           success:function(data){
@@ -29,7 +29,8 @@ Page({
         })
 
         this.setData({
-        	type: id
+        	type: id,
+        	groupName: name
         })
 	},
 	searchIn:function(e){
@@ -51,7 +52,6 @@ Page({
 	    })
 
         if(e.detail.cursor == 0){
-        	console.log('111')
         	self.setData({
 				tips: {}
 			})
@@ -59,10 +59,16 @@ Page({
 	},
 	bindSearch: function(e){
 		const { currentTarget: { dataset: { keywords, location } } } = e
-		const { type } = this.data
-		wx.redirectTo({
-			url: `/src/setAddress/setAddress?keywords=${keywords}&location=${location}`
-		})
+		const { type, groupName } = this.data
+		if(type != 'group'){
+			wx.redirectTo({
+				url: `/src/setAddress/setAddress?keywords=${keywords}&location=${location}`
+			})
+		}else{
+			wx.redirectTo({
+				url: `/src/group/creatGroup?keywords=${keywords}&location=${location}&name=${groupName}`
+			})
+		}
 		util.setEntities({
 	        key: 'address_type',
 	        value: type

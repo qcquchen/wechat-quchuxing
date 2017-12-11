@@ -37,3 +37,36 @@ export const postCompanyJonrey = (options) => _apiPOST(`${API_ROOT}/travel/creat
 
 // 路径规划 /travel/pathPlanning
 export const getLine = (options) => _apiPOST(`${API_ROOT}/travel/pathPlanning`, options)
+
+// 个人主页
+export const getUserInfo = (options) => _apiPOST(`${API_ROOT}/driver/personalInfo`, options)
+
+// 附近群列表
+export const getNearTheGroup = (options) => _apiPOST(`${API_ROOT}/driver/group/nearby`, options)
+
+// 创建群
+export const creatGroup = (options) => _apiPOST(`${API_ROOT}/driver/group/creatGroup`, options)
+
+// 支付完成之后查看该订单详情 /travel/travelInfo_Driver
+export const getOrderInfo = (options) => _apiPOST(`${API_ROOT}/travel/travelInfo_Driver`, options)
+
+// 加入附近的群 driver/group/joinGroup
+export const postJoinGroup = (options) => _apiPOST(`${API_ROOT}/driver/group/joinGroup`, options)
+
+// 我的群 driver/group/myGroup
+export const getMyGroupList = (options) => _apiPOST(`${API_ROOT}/driver/group/myGroup`, options)
+
+// 群详情 driver/group/groupInfo
+export const getGroupInfo = (options) => _apiPOST(`${API_ROOT}/driver/group/groupInfo`, options)
+
+// /driver/group/detailGroup 家公司群内详情信息
+export const getGroupDetails = (options) => _apiPOST(`${API_ROOT}/driver/group/detailGroup`, options)
+
+// driver/group/detailGrouph 会议群内详细信息
+export const getMeetingGroupDetails = (options) => _apiPOST(`${API_ROOT}/driver/group/detailGrouph`, options)
+
+// /driver/upload/audit_weapp 车主认证
+export const postCarInfo = (options) => _apiPOST(`${API_ROOT}/driver/upload/audit_weapp`, options)
+
+// travel/detaillv2 车主查看已订座乘客
+export const getBookedPeople = (options) => _apiPOST(`${API_ROOT}/travel/detaillv2`, options)

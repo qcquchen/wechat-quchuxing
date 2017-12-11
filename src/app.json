@@ -7,8 +7,19 @@
     "src/setAddress/searchAddress",
     "src/ownersSelectLine/ownersSelectLine",
     "src/homePage/homePage",
+
     "src/group/group",
-    "src/group/creatGroup"
+    "src/group/creatGroup",
+    "src/group/groupPassword",
+    "src/group/groupIndex",
+
+    "src/match/match",
+
+    "src/submitorder/submitorder",
+    "src/submitorder/confirmOrder",
+
+    "src/ownersCertification/sesameCertification",
+    "src/ownersCertification/ownersCertification"
   ],
   "window": {
     "navigationBarTextStyle": "white",

@@ -1,7 +1,15 @@
 <view class="header">
 	<view class="city">{{ city }}</view>
 	<view class="search">
-		<input bindinput="searchIn" placeholder="输入您的{{ type == 'home' ? '家庭地址' : '公司地址' }}" />
+		<block wx:if="{{ type == 'home' }}">
+			<input bindinput="searchIn" placeholder="输入您的家庭地址" />
+		</block>
+		<block wx:elif="{{ type == 'company' }}">
+			<input bindinput="searchIn" placeholder="输入您的公司地址" />
+		</block>
+		<block wx:elif="{{ type == 'group' }}">
+			<input bindinput="searchIn" placeholder="输入您的群地址" />
+		</block>
 	</view>
 	<view class="clear">x</view>
 </view>

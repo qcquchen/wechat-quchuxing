@@ -11,6 +11,9 @@ var appConfig = {
     },
     getWechatInfo () {
       let that = this
+      wx.showLoading({
+        title: '加载中',
+      })
       wx.login({
         success (loginres) {
           wx.getUserInfo({
@@ -18,7 +21,7 @@ var appConfig = {
             success (res) {
               let userInfo = res.userInfo
               that.globalData.wechatInfo = userInfo
-              that.globalData.wechatConfig = res
+              // that.globalData.wechatConfig = res
               util.setStorage({
                 key : 'wechatInfo',
                 data : userInfo
@@ -51,14 +54,20 @@ var appConfig = {
     weChatSignin (options, cb) {
       const that = this
       const { code } = options
-      const { iv, encryptedData } = that.globalData.wechatConfig
+      // const { iv, encryptedData } = that.globalData.wechatConfig
       let parmas = Object.assign({}, {code: code})
-      driver_api.postWechatLogin({
-        data: parmas
-      }).then(login_json => {
-        let openId = login_json.data.result.Openid
-        this.postFindLogin(openId)
-      }) 
+      let value = wx.getStorageSync('first_userInfo')
+      if(!value.openId){
+        driver_api.postWechatLogin({
+          data: parmas
+        }).then(login_json => {
+          let openId = login_json.data.result.Openid
+          this.postFindLogin(openId)
+        }) 
+      }else{
+        this.globalData.entities.loginInfo = value
+        wx.hideLoading()
+      }
     },
     postFindLogin(openId){
       driver_api.postFindLogin({
@@ -70,13 +79,17 @@ var appConfig = {
         if(status != -1){
           json.data.openId = openId
           this.globalData.entities.loginInfo = json.data
-          this.globalData.appLaunch = true
+          util.setStorage({
+            key : 'first_userInfo',
+            data : json.data
+          })
         }else{
-          this.globalData.appLaunch = false
           this.globalData.entities.loginInfo = {
             openId: openId
           }
         }
+      }).then(()=>{
+          wx.hideLoading()
       })
     }
 }

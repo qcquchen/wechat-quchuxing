@@ -21,3 +21,6 @@ export const postMatchCompany = (options) => _apiPOST(`${API_ROOT}/travel/matchi
 
 // 匹配乘客 /travel/matching/passenger
 export const postMatchPeople = (options) => _apiPOST(`${API_ROOT}/travel/matching/passenger`, options)
+
+// 支付
+export const postPay = (options) => _apiPOST(`${API_ROOT}/orders/createlv4`, options)

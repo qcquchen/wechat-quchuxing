@@ -103,55 +103,33 @@ Page({
         match_active: 'car',
         strategy_active: '时间最短',
         strategy: 0,
-        isHaveSeats: 0,
-        isMatchingTravel: 0,
-        isMatch: false,
-        match_cars: [],
-        matchCar: {},
-        car_id: null,
         now_time: moment().toDate().pattern('yyyy-MM-dd'),
         now_hour: moment().hour(),
         now_minute: moment().minute(),
-        seat_img: [{
-          img_true: '../images/icon_seat_have@3x.png',
-          img_false: '../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../images/icon_seat_have@3x.png',
-          img_false: '../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../images/icon_seat_have@3x.png',
-          img_false: '../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../images/icon_seat_have@3x.png',
-          img_false: '../images/icon_seat@3x.png',
-          type: true
-        }]
+        circles: []
       },
       onShow(){
         const { strategy } = app.globalData.entities
         switch (strategy)
         {
-          case 0:
+          case '0':
             this.setData({
               strategy_active: '时间最短'
             })
             break;
-          case 2:
+          case '2':
             this.setData({
               strategy_active: '距离最短'
             })
             break;
-          case 9:
+          case '9':
             this.setData({
               strategy_active: '拥堵较少'
             })
             break;
         }
         this.setData({
-          strategy: strategy
+          strategy: strategy ? strategy : 0
         })
       },
       onLoad(){
@@ -184,6 +162,11 @@ Page({
               startLocation: data[0].regeocodeData.aois[0].location,
               latitude: data[0].latitude,
               longitude: data[0].longitude,
+              circles: [{
+                latitude: data[0].latitude,
+                longitude: data[0].longitude,
+                radius: 100
+              }]
             })
             self.postNearbyOfPeople(data[0].latitude, data[0].longitude)
           },
@@ -297,10 +280,13 @@ Page({
         let new_hour = SELECT_TIME_HOUR[timeArray[1].findIndex(json => json == timeArray[1][timeIndex[1]])]
         let new_minute = SELECT_TIME_MINUTE[timeArray[2].findIndex(json => json == timeArray[2][timeIndex[2]])]
         let new_time = new_day + ' ' + new_hour + ':' + new_minute + ':00' 
-        if(new_hour < 10 ){
+        if(new_hour < 10 && new_minute > 10){
           new_time = new_day + ' ' + '0' + new_hour + ':' + new_minute + ':00' 
         }
-        if(new_minute < 10){
+        if(new_minute < 10 && new_hour > 10){
+          new_time = new_day + ' ' + new_hour + ':' + '0' + new_minute + ':00' 
+        }
+        if(new_minute < 10 && new_hour < 10){
           new_time = new_day + ' ' + '0' + new_hour + ':' + '0' + new_minute + ':00' 
         }
         let start_Location = startLocation.split(',').map(json => Number(json))
@@ -320,16 +306,19 @@ Page({
             return
           }
         }
+        let end_location = travelType == 2 ? location_home : location_company
+        let end_address = travelType == 2 ? addr_home : addr_company
         if(switch_identity == 'passenger'){
-          parmas = Object.assign({}, {token: token}, {startTimes: [new_time]}, {seats: Number(seat_number_index) + 1}, {travelType: Number(travelType)}, {start: start_Location}, {startAddress: startAddress}, {end: location_home}, {endAddress: addr_home}, {isWX: true})
+          parmas = Object.assign({}, {token: token}, {startTime: [new_time]}, {seats: Number(seat_number_index) + 1}, {travelType: Number(travelType)}, {start: start_Location}, {startAddress: startAddress}, {end: end_location}, {endAddress: end_address}, {isWX: true})
           this.postJounrey(parmas)
         }
         if(switch_identity == 'Owners'){
-          parmas = Object.assign({}, {token: token}, {startTimes: [new_time]}, {seats: Number(seat_number_index) + 1}, {travelType: Number(travelType)}, {start: start_Location}, {startAddress: startAddress}, {end: location_company}, {endAddress: addr_company}, { price: select_price[select_price_index] }, {isWX: true}, {strategy: strategy})
+          parmas = Object.assign({}, {token: token}, {startTime: [new_time]}, {seats: Number(seat_number_index) + 1}, {travelType: Number(travelType)}, {start: start_Location}, {startAddress: startAddress}, {end: end_location}, {endAddress: end_address}, { price: select_price[select_price_index] }, {isWX: true}, {strategy: strategy})
           this.postJounreyCar(parmas)
         }
       },
       postJounrey(parmas){
+        const { travelType, location_company, location_home } = this.data
         passenger_api.postJounrey({
           data: parmas
         }).then(json => {
@@ -339,12 +328,15 @@ Page({
             icon: 'success',
             duration: 2000
           })
-          this.setData({
-            match: false,
-            hideOfShow_type: 'match'
-          })
-          this.postMatchCompany(passengerTravelId)
-          this.postMatchPeople(passengerTravelId)
+          setTimeout(() =>{
+            util.setEntities({
+              key: 'location',
+              value: travelType == '2' ? location_home : location_company
+            })
+            wx.navigateTo({
+              url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}`
+            })
+          }, 2000)
         }, e => {
           wx.showToast({
             title: '发布失败',
@@ -353,80 +345,25 @@ Page({
           })
         })
       },
-      // 匹配车主
-      postMatchCompany(id){
-        const { token } = app.globalData.entities.loginInfo
-        let parmas = Object.assign({}, {token: token}, {passengerTravelId: id}, {pageNum: 1})
-        let match = setInterval(() =>{
-          passenger_api.postMatchCompany({data: parmas}).then(json => {
-            const { matchTravel } = json.data
-            if(matchTravel.isMatchingTravel == 1){
-              clearInterval(match)
-              let data = json.data.matchTravel.travelResults
-              this.setData({
-                isMatchingTravel: matchTravel.isMatchingTravel,
-                match_cars: data
-              })
-              this.matchCarsInfo(null, data[0].travelId)
-            }
-          }, e=>{
-            wx.showToast({
-              title: '匹配失败',
-              icon: 'success',
-              duration: 2000
-            })
-          })
-        }, 5000) 
-      },
-      matchCarsInfo(e, car_id){
-        const { match_cars, seat_img } = this.data
-        let id =  e ? e.currentTarget.dataset.id : car_id
-        let new_match = match_cars.find(data => data.travelId == id)
-        seat_img.map((json, index) => {
-          if((index + 1) <= new_match.surplusSeats){
-            json.type = false
-          }
-        })
-        console.log(match_cars,'-------------match_cars')
-        this.setData({
-          matchCar: new_match,
-          car_id: id,
-          seat_img: seat_img
-        })
-      },
-      // 匹配乘客
-      postMatchPeople(travelId){
-        const { token } = app.globalData.entities.loginInfo
-        const { switch_identity } = this.data
-        let role = switch_identity == 'passenger' ? 0 : 1
-        let parmas = Object.assign({}, { token: token }, { role: role }, { travelId: travelId }, { pageNum: 1 })
-        let match = setInterval(() =>{
-          passenger_api.postMatchPeople({data: parmas}).then(json => {
-            // 匹配过程处理
-            const { isMatch, matchTravelPassengers } = json.data.matchTravelPassengers
-            console.log(json.data,'--------------json.data')
-           if(isMatch){
-              clearInterval(match)
-              let data = json.data.matchTravel.travelResults
-              this.setData({
-                isMatchingTravel: matchTravel.isMatchingTravel,
-                match_cars: data
-              })
-              this.matchCarsInfo(null, data[0].travelId)
-            }
-          }, e=>{
-            wx.showToast({
-              title: '匹配失败',
-              icon: 'success',
-              duration: 2000
-            })
-          })
-        }, 5000) 
-      },
       postJounreyCar(parmas){
+        const { travelType, location_company, location_home } = this.data
         driver_api.postCompanyJonrey({data: parmas}).then(json => {
           // 车主发布行程
-          console.log(json,'----------------json')
+          const { travelId } = json.data.travelId
+          wx.showToast({
+            title: '发布成功',
+            icon: 'success',
+            duration: 2000
+          })
+          setTimeout(() =>{
+            util.setEntities({
+              key: 'location',
+              value: travelType == '2' ? location_home : location_company
+            })
+            wx.navigateTo({
+              url: `/src/match/match?id=${travelId}&&type=owner`
+            })
+          }, 2000)
         })
       },
       showSelectHomeOfWork(){
@@ -487,6 +424,13 @@ Page({
           })
           break;
         case 3:
+          const phone = app.globalData.entities.loginInfo.phone
+          if(!phone){
+            wx.navigateTo({
+              url: `/src/login/login`
+            })
+            return
+          }
           console.log('跳转到附近的群')
           wx.navigateTo({
             url: `/src/group/group`
@@ -594,7 +538,9 @@ Page({
               showCancel: false,
               success: function(res) {
                 if (res.confirm) {
-                  console.log('用户点击确定')
+                  wx.navigateTo({
+                    url: `/src/ownersCertification/ownersCertification`
+                  })
                 }
               }
             })
@@ -632,9 +578,13 @@ Page({
             this.setData({
               timeIndex: [0, hour_index, 0],
               seat_number_index: 0,
-              select_price_index: 0
+              select_price_index: 0,
+              switch_identity: 'Owners'
             })
           }
+        })
+        this.setData({
+          switch_identity: 'passenger'
         })
       },
       selectLine:function(){

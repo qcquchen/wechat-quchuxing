@@ -592,7 +592,7 @@ export const saveUserInfo = (res) => {
 
 export const toPay = (res) => {
   let app = getApp()
-  const data = res.data
+  const data = res.wxapp
   app.globalData.wechatPay = data
 
   return new Promise((resolve, reject) => {
@@ -601,7 +601,7 @@ export const toPay = (res) => {
       nonceStr  : data.nonceStr,
       package   : data.package,
       signType  : data.signType,
-      paySign   : data.paySign,
+      paySign   : data.sign,
       success (res) {
         wx.showToast({
           title: '支付成功！',

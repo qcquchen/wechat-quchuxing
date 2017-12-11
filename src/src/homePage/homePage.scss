@@ -88,85 +88,112 @@
 
 .content{
 	background: #F7F6F6;
-	.strokes{
-		.stroke_list{
-			border-radius: 15px;
+	.stroke_list{
+		background: #ffffff; 
+		border-radius: 10px;
+		box-shadow: 0 2px 3px #cccccc;
+		margin-bottom: 15px;
+		.list_header{
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			border: 1px solid #e1e1e1;
-			background: #ffffff;
-			margin-bottom: 15px;
-			.stroke_list_left{
-				padding: 10px;
-				.stroke_title{
-					font-size: 16px;
-					color: #484848;
-					font-weight: 600;
-				}
-				.stroke_location{
-					display: flex;
-					align-items: center;
-					.loc_style{
-						width: 10px;
-						height: 10px;
-						margin-right: 5px;
-						>image{
-							display: block;
-							width: 100%;
-							height: 100%;
-							background: #cccccc;
-							border-radius: 100%;
-						}
-					}
-					.loc_addres{
-						font-size: 13px;
-						font-weight: 600;
-						color: #484848;
-					}
-					.loc_downAddress{
-						color: #737373;
-						font-size: 10px;
-						margin-left: 10px;
-					}
-				}
-				.number{
-					font-size: 10px;
-					color: #737373;
-					display: flex;
-					align-items: center;
-					>text{
-						font-size: 17px;
-						color: #484848;
-						display: block;
-						font-weight: 600;
-						margin-left: 5px;
-					}
+			padding: 10px;
+			border-bottom: 1px solid #e1e1e1;
+			.stroke_title{
+				font-size: 16px;
+				color: #484848;
+				font-weight: 600;
+			}
+			.stroke_type{
+				font-size: 13px;
+				border-radius: 8px;
+				padding: 3px 10px;
+				>image{
+					display: block;
+					width: 40px;
+					height: 40px;
+					background: #cccccc;
+					border-radius: 50%;
 				}
 			}
-			.stroke_list_right{
-				padding: 10px;
-				.car_avtoer{
-					display: block;
-					width: 60px;
-					height: 60px;
+		}
+		.list_content{
+			padding: 15px;
+			.list_location{
+				font-size: 13px;
+				color: #737373;
+				display: flex;
+				align-items: center;
+				.loc_style_up{
+					width: 8px;
+					height: 8px;
 					border-radius: 8px;
 					background: #cccccc;
 				}
-				.car_info{
-					text-align: center;
-					>view:first-child{
-						font-size: 13px;
-						color: #484848;
-					}
-					>view:last-child{
-						background: linear-gradient(to right, #00C6FF , #4287FF);
-						border-radius: 15px;
-						color: #ffffff;
+				.loc_style_down{
+					width: 8px;
+					height: 8px;
+					border-radius: 8px;
+					background: #cccccc;
+				}
+				.loc_address{
+					margin-left: 5px;
+					>text{
 						font-size: 10px;
 					}
 				}
 			}
 		}
+		.list_foot{
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			.ride_number, .payment{
+				display: flex;
+				align-items: center;
+				>view:first-child{
+					font-size: 10px;
+					color: #737373;
+					margin-right: 5px;
+				}
+				>view:last-child{
+					font-size: 17px;
+					color: #484848;
+					font-weight: 600;
+				}
+				.number_img{
+					display: flex;
+					align-items: center;
+					>image{
+						width: 20px;
+						height: 20px;
+						margin-right: 10px;
+						display: block;
+						background: #cccccc;
+						border-radius: 100%;
+					}
+				}
+			}
+		}
 	}
+}
+
+.paid{
+	border: 1px solid #73C2FF;
+	color: #73C2FF;
+}
+
+.unpaid{
+	background: #73C2FF;
+	color: #ffffff;
+}
+
+.look_at_the_way{
+	border: 1px solid rgb(255, 202, 115);
+	color: rgb(255, 202, 115);
+}
+
+.over{
+	border: 1px solid rgb(208, 2, 27);
+	color: rgb(208, 2, 27);
 }
