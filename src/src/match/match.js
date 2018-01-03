@@ -5,61 +5,50 @@ import moment from '../../js/moment'
 import * as amapFile from '../../js/amap-wx'
 
 var app = getApp()
-
+var myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
 Page({
 	data:{
 		    video_width: 0,
         video_height: 0,
-        latitude: 0,
-      	longitude: 0,
+        latitude: 39.5427,
+        longitude: 116.2317,
         isMatchingTravel: 0,
         isMatch: false,
         match_cars: [],
         matchCar: {},
         car_id: null,
         match_active: 'car',
-        seat_img: [{
-          img_true: '../../images/icon_seat_have@3x.png',
-          img_false: '../../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../../images/icon_seat_have@3x.png',
-          img_false: '../../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../../images/icon_seat_have@3x.png',
-          img_false: '../../images/icon_seat@3x.png',
-          type: true
-        },{
-          img_true: '../../images/icon_seat_have@3x.png',
-          img_false: '../../images/icon_seat@3x.png',
-          type: true
-        }],
         startLocation: [],
         code_type: 'owner',
         orderInfo: {},
         booked_active: 'shun',
         shunPassengers: {},
         people_info: {},
-        people_id: null
+        people_id: null,
+        attention_status: 0,
+        passenger_details: [],
+        passenger_info: {},
+        templeTime: '',
+        travelId: null,
+        tembleTime_active: false,
+        passenger_up_type: false,
+        left_text: '>>>',
+        right_text: '<<<'
 	},
 	onLoad(option){
     let self = this
-    let myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
-      wx.getSystemInfo({
-      success: function(res) {
-        self.setData({
-          video_width: res.windowWidth,
-          video_height: res.windowHeight
-        })
-      }
+    const { deviceInfo } = app.globalData.entities
+
+    this.setData({
+      video_width: deviceInfo.windowWidth,
+      video_height: deviceInfo.windowHeight
     })
 
     myAmapFun.getRegeo({
       success:function(data){
         self.setData({
           startAddress: data[0].regeocodeData.formatted_address,
-          startLocation: data[0].regeocodeData.aois[0].location,
+          startLocation: data[0].regeocodeData.addressComponent.streetNumber.location,
           latitude: data[0].latitude,
           longitude: data[0].longitude,
         })
@@ -81,7 +70,8 @@ Page({
     this.setData({
       match_id: id,
       seat: seat,
-      code_type: type
+      code_type: type,
+      options: option
     })
 		if(type == 'passenger'){
 			this.postMatchCompany(id, token)
@@ -91,7 +81,11 @@ Page({
     }
 		if(type == 'details'){
     	const { order_info } = app.globalData.entities
-			this.getOrderInfo(order_info)
+      if(order_info){
+  			 this.getOrderInfo(order_info.travelId)
+      }else{
+         this.getOrderInfo(id)
+      }
 		}
 	},
 	//设置maker点
@@ -107,7 +101,6 @@ Page({
         latitude: start_Location[1],
         width: 32,
         height: 50,
-        title: '第一个',
         anchor: {x: .5, y: .5}
       },{
         iconPath: '../../images/icon_map_end@3x.png',
@@ -116,7 +109,6 @@ Page({
         latitude: location_end[0],
         width: 32,
         height: 50,
-        title: '第一个',
         anchor: {x: .5, y: .5}
       }]
 		})
@@ -127,11 +119,21 @@ Page({
     passenger_api.postMatchCompany({data: parmas}).then(json => {
       const { matchTravel } = json.data
       let data = json.data.matchTravel.travelResults
+      data && data.map(json => {
+        if(json.surplusSeats != 0){
+          let seat_true = util.seats_true(json.seats - json.surplusSeats)
+          let seat_false = util.seats_false(json.surplusSeats)
+          json.seat_true = seat_true
+          json.seat_false = seat_false
+        }else{
+          let seat_true = util.seats_true(json.seats)
+          json.seat_true = seat_true
+        }
+      })
       this.setData({
         isMatchingTravel: matchTravel.isMatchingTravel,
         match_cars: data
       })
-      console.log(data,'------------data')
       if(data.length != 0){
         this.matchCarsInfo(null, data[0].travelId)
       }
@@ -144,18 +146,12 @@ Page({
     })
 	},
 	matchCarsInfo(e, car_id){
-	    const { match_cars, seat_img } = this.data
+	    const { match_cars } = this.data
 	    let id =  e ? e.currentTarget.dataset.id : car_id
 	    let new_match = match_cars.find(data => data.travelId == id)
-	    seat_img.map((json, index) => {
-	      if((index + 1) <= new_match.surplusSeats){
-	        json.type = false
-	      }
-	    })
 	    this.setData({
 	      matchCar: new_match,
-	      car_id: id,
-	      seat_img: seat_img
+	      car_id: id
 	    })
 	},
 	matchCar:function(){
@@ -168,8 +164,8 @@ Page({
 	},
 	matchPeople:function(){
     const { token } = app.globalData.entities.loginInfo
-    const {match_id, type} = this.data
-    this.postMatchPeople(match_id, token, type)
+    const {match_id, code_type} = this.data
+    this.postMatchPeople(match_id, token, code_type)
 		this.setData({
 		  match_active: 'people'
 		})
@@ -190,12 +186,13 @@ Page({
 	  passenger_api.postMatchPeople({data: parmas}).then(json => {
 	    // 匹配过程处理
       const { isMatch, matchTravelPassengers } = json.data.matchTravelPassengers
-      this.setData({
-        isMatch: isMatch,
-        shunPassengers: matchTravelPassengers,
-        people_id: matchTravelPassengers[0].passengerTravelId
-      })
-      this.peopleDetails(null, matchTravelPassengers[0].passengerTravelId)
+      if(matchTravelPassengers.length != 0){
+        this.setData({
+          isMatch: isMatch,
+          shunPassengers: matchTravelPassengers
+        })
+        this.peopleDetails(null, matchTravelPassengers[0].passengerTravelId)
+      }
 	  }, e=>{
 	    wx.showToast({
 	      title: '匹配失败',
@@ -209,28 +206,41 @@ Page({
     let id = e ? e.currentTarget.dataset.id : people_id
     let new_match = shunPassengers.find(data => data.passengerTravelId == id)
     this.setData({
-      people_info: new_match
+      people_info: new_match,
+      people_id: new_match.passengerTravelId,
+      people_phone: new_match.phone
+    })
+  },
+  callPeoplePhone: function(){
+    const { people_phone } = this.data
+    wx.makePhoneCall({
+      phoneNumber: String(people_phone) 
     })
   },
 	submitOrder:function(){
-		const { seat, car_id, matchCar } = this.data
-		let parmas = Object.assign({}, {bookSeats: Number(seat)}, {travelId: car_id}, { price: matchCar.price })
+		const { seat, car_id, matchCar, match_id } = this.data
+		let parmas = Object.assign({}, {passengerTravelId: match_id}, {bookSeats: Number(seat)}, {travelId: car_id}, { price: matchCar.price })
 		util.setEntities({
-          key: 'order_info',
-          value: parmas
-        })
-        wx.navigateTo({
-          url: `/src/submitorder/submitorder`
-        })
+      key: 'order_info',
+      value: parmas
+    })
+    wx.navigateTo({
+      url: `/src/submitorder/submitorder`
+    })
 	}, 
-	getOrderInfo(data){
-		const { travelId } = data
+	getOrderInfo(id){
 		const { phone } = app.globalData.entities.loginInfo
-		let parmas = Object.assign({}, {travelId: travelId}, { phone: phone })
+		let parmas = Object.assign({}, {travelId: id}, { phone: phone })
 		driver_api.getOrderInfo({data: parmas}).then(json => {
 			let data = json.data
+      if(moment().isBefore(moment(data.travel.tembleTime))){
+        this.setData({
+          passenger_up_type: true
+        })
+      }
 			this.setData({
-				orderInfo: data
+				orderInfo: data.travel,
+        pay_order_travelId: id
 			})
 		})
 	},
@@ -238,38 +248,318 @@ Page({
   booked(){
     const {match_id} = this.data
     const { token } = app.globalData.entities.loginInfo
-    this.getBookedPeople(match_id, token)
+    this.getBookedPeople(match_id)
     this.setData({
-      booked_active: 'car'
+      booked_active: 'car',
+      travelId: match_id
     })
   },
   shun_passengers(){
     const { token } = app.globalData.entities.loginInfo
-    const {match_id} = this.data
-    this.postMatchPeople(match_id, token)
+    const {match_id, code_type} = this.data
+    this.postMatchPeople(match_id, token, code_type)
     this.setData({
       booked_active: 'shun'
     })
   },
-  getBookedPeople(id, token){
-    driver_api.getBookedPeople({
+  getBookedPeople(id){
+    const { phone, token } = app.globalData.entities.loginInfo
+    driver_api.getOrderInfo({
+      data: {
+        travelId: id,
+        phone: phone
+      }
+    }).then(json => {
+      let passenger_info = json.data.travel.passengers
+      let travel_data = json.data.travel
+      travel_data.travelId = json.data.travelId
+      if(moment().isBefore(moment(travel_data.tembleTime))){
+        this.setData({
+          tembleTime_active: true
+        })
+      }
+      this.setData({
+        passenger_details: passenger_info,
+        templeTime: json.data.travel.startTime,
+        travel_order: travel_data,
+        car_travel_active: moment().isBefore(json.data.travel.tembleTime)
+      })
+      this.getLine(travel_data.start, travel_data.end)
+      if(passenger_info.length != 0){
+        this.getPassengerInfo(null, passenger_info[0].phone)
+      }
+    })
+  },
+  getLine(start, end){
+    const { token } = app.globalData.entities.loginInfo
+  },
+  getPassengerInfo:function(e, id){
+    let passenger_id = e ? e.currentTarget.dataset.id : id
+    const { passenger_details } = this.data
+    let new_match = passenger_details.find(data => data.phone == passenger_id)
+    this.setData({
+      passenger_info: new_match,
+      passenger_info_id: new_match.phone
+    })
+  },
+  // 关注
+  attention: function(e){
+    const { attention_status, matchCar } = this.data
+    const { token } = app.globalData.entities.loginInfo
+    let type = attention_status == 0 ? 1 : 0
+    let parmas = Object.assign({}, {token: token}, { attentione: matchCar.driverPhone }, {status: type}, { formId: e.detail.formId })
+    driver_api.postAttention({data: parmas}).then(json => {
+      this.setData({
+        attention_status: json.data.status
+      })
+    })
+  },
+  go_car_phone: function(){
+    const { matchCar } = this.data
+    wx.makePhoneCall({
+      phoneNumber: String(matchCar.driverPhone) 
+    })
+  },
+  gotoPassengerPhone: function(){
+    const { passenger_info } = this.data
+    wx.makePhoneCall({
+      phoneNumber: String(passenger_info.phone) 
+    })
+  },
+  shareRemaining:function(){
+
+  },
+  onShareAppMessage: function (res) {
+    const { options } = this.data
+    const type = res.target.dataset.id
+    let title = type == 'share' ? '趣出行 我的出行时间 ' + options.times : '趣出行'
+    return {
+      title: title,
+      path: `/src/index`,
+      success: function(res) {
+        wx.showToast({
+          title: '分享成功',
+          icon: 'success',
+          duration: 2000
+        })
+      },
+      fail: function(res) {
+        wx.showToast({
+          title: '分享失败',
+          icon: 'success',
+          duration: 2000
+        })
+      }
+    }
+  },
+  nav_up: function(){
+    const { orderInfo } = this.data
+    let latitude = orderInfo.start[1]
+    let longitude = orderInfo.start[0]
+    wx.openLocation({
+      latitude: latitude,
+      longitude: longitude,
+      name: orderInfo.startAddress,
+      scale: 28
+    })
+  },
+  nav_down: function(){
+    const { orderInfo } = this.data
+    let latitude = orderInfo.end[1]
+    let longitude = orderInfo.end[0]
+    wx.openLocation({
+      latitude: latitude,
+      longitude: longitude,
+      name: orderInfo.endAddress,
+      scale: 28
+    })
+  },
+  updateTravel: function(e){
+    const { token } = app.globalData.entities.loginInfo
+    const { currentTarget: { dataset: { text } } } = e
+    const { travel_order } = this.data
+    let content = text == 'over' ? '确定取消行程吗？':'确定结束行程吗？'
+    let over_content = text == 'over' ? '取消行程':'完成行程'
+    wx.showModal({
+      title: '提示',
+      content: content,
+      success: function(res) {
+        if (res.confirm) {
+          driver_api.updateTravel({
+            data: {
+              token: token,
+              travelId: travel_order.travelId
+            }
+          }).then(json => {
+            wx.showToast({
+              title: over_content,
+              icon: 'success',
+              duration: 2000
+            })
+            setTimeout(() => {
+              wx.reLaunch({
+                url: `/src/index`
+              })
+            }, 2000)
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  startCar:function(e){
+    const { currentTarget: { dataset: { id } } } = e
+    const { token } = app.globalData.entities.loginInfo
+    driver_api.startCar({
       data: {
         travelId: id,
         token: token
       }
     }).then(json => {
-      console.log(json,'----------------json')
+      wx.showToast({
+        title: '已出发',
+        icon: 'success',
+        duration: 2000
+      })
     })
   },
-  // 关注
-  attention: function(){
-
+  invitationToBoard: function(){
+    const { token } = app.globalData.entities.loginInfo
+    const { match_id, people_phone } = this.data
+    driver_api.sharePropleUpCar({
+      data: {
+        token: token,
+        passengerPhone: people_phone,
+        travelId: match_id
+      }
+    }).then(json => {
+      wx.showToast({
+        title: '已发出邀请',
+        icon: 'success',
+        duration: 2000
+      })
+      this.booked()
+    })
   },
-  go_car_phone: function(){
-    const { match_cars } = this.data
-    console.log(match_cars,'---------------???')
-    // wx.makePhoneCall({
-    //   phoneNumber: '1340000' //仅为示例，并非真实的电话号码
-    // })
+  passenger_cancel: function(e){
+    const { token } = app.globalData.entities.loginInfo
+    const { orderInfo } = this.data
+    wx.showModal({
+      title: '提示',
+      content: '确定取消行程吗？',
+      success: function(res) {
+        if (res.confirm) {
+          passenger_api.deletePeopleTravel({
+            data: {
+              token: token,
+              ordersTravelId: orderInfo.ordersTravelId,
+              refundReason: '小程序退款'
+            }
+          }).then(json => {
+            wx.showToast({
+              title: '取消成功',
+              icon: 'success',
+              duration: 2000
+            })
+            setTimeout(() => {
+              wx.navigateBack({
+                delta: 1
+              })
+            }, 2000)
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  passengerDown: function(){
+    const { token } = app.globalData.entities.loginInfo
+    const { orderInfo } = this.data
+    wx.showModal({
+      title: '提示',
+      content: '确定完成行程吗？',
+      success: function(res){
+        if (res.confirm) {
+          passenger_api.passengerDown({
+            data: {
+              token: token,
+              ordersTravelId: orderInfo.ordersTravelId
+            }
+          }).then(json => {
+            wx.showToast({
+              title: '已完成行程',
+              icon: 'success',
+              duration: 2000
+            })
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+
+  //标记车主迟到
+  markedLate(){
+    const { token } = app.globalData.entities.loginInfo
+    const { orderInfo } = this.data
+    wx.showModal({
+      title: '提示',
+      content: '确定标记车主迟到吗？',
+      success: function(res){
+        if (res.confirm) {
+          passenger_api.markedLate({
+            data: {
+              token: token,
+              ordersTravelId: orderInfo.ordersTravelId
+            }
+          }).then(json => {
+            wx.showToast({
+              title: '标记为迟到',
+              icon: 'success',
+              duration: 2000
+            })
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  // 车主取消行程
+  carOverTravel: function(){
+    
+  },
+  callDriverPhone: function(){
+    const { orderInfo } = this.data
+    wx.makePhoneCall({
+      phoneNumber: String(orderInfo.driverPhone) 
+    })
+  },
+  clickOnTheTrain: function(){
+    const { token } = app.globalData.entities.loginInfo
+    const { orderInfo, pay_order_travelId } = this.data
+    passenger_api.clickOnTheTrain({
+      data: {
+        token: token,
+        ordersTravelId: orderInfo.ordersTravelId
+      }
+    }).then(json => {
+      if(json.data.status == 200){
+        wx.showToast({
+          title: '已上车',
+          icon: 'success',
+          duration: 2000
+        })
+        this.getOrderInfo(pay_order_travelId)
+      }
+    })
+  },
+  callCustomerService: function(){
+    wx.makePhoneCall({
+      phoneNumber: '15890349336'
+    })
   }
 })

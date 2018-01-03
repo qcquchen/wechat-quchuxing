@@ -7,67 +7,97 @@ import * as constants from './js/constants'
 
 var appConfig = {
     onLaunch: function () {
-      this.getWechatInfo()
+      this.getWechatInfo().then(res => {
+        // this.initCallBack()
+      })
+    },
+    initCallBack () {
     },
     getWechatInfo () {
       let that = this
-      wx.showLoading({
-        title: '加载中',
-      })
-      wx.login({
-        success (loginres) {
-          wx.getUserInfo({
-            withCredentials: true,
-            success (res) {
-              let userInfo = res.userInfo
-              that.globalData.wechatInfo = userInfo
-              // that.globalData.wechatConfig = res
-              util.setStorage({
-                key : 'wechatInfo',
-                data : userInfo
+
+      return new Promise((resolve, reject) => {
+        wx.login({
+          success (loginres) {
+            wx.getUserInfo({
+              withCredentials: true,
+              success (res) {
+                let userInfo = res.userInfo
+                that.globalData.wechatInfo = userInfo
+                that.globalData.appLaunch = true
+                // that.globalData.wechatConfig = res
+                util.setStorage({
+                  key : 'wechatInfo',
+                  data : userInfo
+                })
+                userInfo.code = loginres.code
+                return that.weChatSignin(userInfo).then(resolve, reject)
+              },
+              fail () {
+                wx.showModal({
+                  title: '提示',
+                  content: '您拒绝了登录系统，如想正常使用所有功能，请重新授权！',
+                  cancelText: '残忍拒绝',
+                  confirmText: '重新授权',
+                  success: function(res) {
+                    if (res.confirm) {
+                      if (wx.openSetting) {
+                        wx.openSetting({
+                          success: (res) => {
+                            if (res.authSetting['scope.userInfo']) {
+                              that.getWechatInfo()
+                            }
+                          }
+                        })
+                      } else {
+                        wx.showModal({
+                          title: '提示',
+                          content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+                        })
+                      }
+                    } else if (res.cancel) {
+                      console.log('用户点击取消')
+                    }
+                  }
+                })
+                  reject()
+                }
               })
-              userInfo.code = loginres.code
-              return that.weChatSignin(userInfo)
-            },
-            fail () {
-              console.log('验证失败')
-            }
-          })
-        },
-        fail (err) {
-          console.log('wx.login  error ', err)
-        }
+            resolve('toLogin')
+          },
+          fail (err) {
+            console.log('wx.login  error ', err)
+            reject()
+          }
+        })
       })
     },
     globalData: {
+      appLaunch      : false,
       callback       : null,
       unloadCallback : null,
       hasLogin       : false,
       wechatInfo     : null,
       userInfo       : null,
-      appLaunch      : false,
       wechatConfig   : {},
       entities       : {
-        deviceInfo : wx.getSystemInfoSync()
+        deviceInfo : wx.getSystemInfoSync(),
+        loginInfo: {}
       }
     },
     weChatSignin (options, cb) {
       const that = this
       const { code } = options
-      // const { iv, encryptedData } = that.globalData.wechatConfig
       let parmas = Object.assign({}, {code: code})
-      let value = wx.getStorageSync('first_userInfo')
-      if(!value.openId){
-        driver_api.postWechatLogin({
-          data: parmas
-        }).then(login_json => {
-          let openId = login_json.data.result.Openid
-          this.postFindLogin(openId)
-        }) 
-      }else{
-        this.globalData.entities.loginInfo = value
-        wx.hideLoading()
-      }
+      return new Promise((resolve, reject) => {
+          driver_api.postWechatLogin({
+            data: parmas
+          }).then(login_json => {
+            util.saveUserInfo(login_json)
+            let openId = login_json.data.result.Openid
+            this.postFindLogin(openId)
+          }) 
+      })
     },
     postFindLogin(openId){
       driver_api.postFindLogin({
@@ -79,6 +109,7 @@ var appConfig = {
         if(status != -1){
           json.data.openId = openId
           this.globalData.entities.loginInfo = json.data
+
           util.setStorage({
             key : 'first_userInfo',
             data : json.data
@@ -88,8 +119,6 @@ var appConfig = {
             openId: openId
           }
         }
-      }).then(()=>{
-          wx.hideLoading()
       })
     }
 }

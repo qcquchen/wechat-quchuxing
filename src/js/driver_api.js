@@ -8,6 +8,12 @@ import { _apiPOST, _apiGET, _apiPUT, _apiDELETE } from './apiUtils'
 
 const REQUEST_TYPE = ['GET','POST','PUT','DELETE']
 
+// 假数据 周边的行程/travel/nearbyPeople
+export const getFakeData = (options) => _apiPOST(`${API_ROOT}/travel/nearbyPeople`, options)
+
+// 获取地理位置
+export const getLocationText = (options) => _apiPOST(`${API_ROOT}/travel/reverseGeocoding`, options)
+
 // export const postUnlockByNetWorking = (options) => _apiPOST(`${API_ROOT}/locks/unlock_by_networking`, options)
 export const postWechatLogin = (options) => _apiPOST(`${API_ROOT}/weapp/login`, options)
 
@@ -70,3 +76,36 @@ export const postCarInfo = (options) => _apiPOST(`${API_ROOT}/driver/upload/audi
 
 // travel/detaillv2 车主查看已订座乘客
 export const getBookedPeople = (options) => _apiPOST(`${API_ROOT}/travel/detaillv2`, options)
+
+// attention/changAttention 关注
+export const postAttention = (options) => _apiPOST(`${API_ROOT}/attention/changAttention`, options)
+
+// attention/attentionList
+export const getAttentionList = (options) => _apiPOST(`${API_ROOT}/attention/attentionList`, options)
+
+// 车主 完成行程 /travel/finalylv1
+export const updateTravel = (options) => _apiPOST(`${API_ROOT}/travel/finalylv1`, options)
+
+// 发车 /travel/departurelv1
+export const startCar = (options) => _apiPOST(`${API_ROOT}/travel/departurelv1`, options)
+
+// 上传司机头像 /driver/detail/picture
+export const updateHeaderImg = (options) => _apiPOST(`${API_ROOT}/driver/detail/picture`, options)
+
+// 修改个人信息 /driver/detail/changelv1
+export const updateUserInfo = (options) => _apiPOST(`${API_ROOT}/driver/detail/change_weapp`, options)
+
+// 钱包信息 driver/money
+export const getMoneyDetails = (options) => _apiPOST(`${API_ROOT}/driver/money`, options)
+
+// 提交提现账号 /driver/moneylv2
+export const postMoneylv = (options) => _apiPOST(`${API_ROOT}/driver/saveAlipay`, options)
+
+///travel/invite 邀请乘客上车
+export const sharePropleUpCar = (options) => _apiPOST(`${API_ROOT}/travel/invite`, options)
+
+// 车主取消行程 /travel/cancel
+export const deleteTravel = (options) => _apiPOST(`${API_ROOT}/travel/cancel`, options)
+
+// 删除已完成行程 /travel/history/delete
+export const deleteOverTravel = (options) => _apiPOST(`${API_ROOT}/travel/history/delete`, options)

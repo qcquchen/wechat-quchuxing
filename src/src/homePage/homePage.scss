@@ -1,47 +1,153 @@
 .header{
 	display: flex;
 	justify-content: space-between;
-	.mine_img{
+	.header_left{
+		width: 100px;
+		height: 100px;
 		>image{
-			width: 100px;
-			height: 100px;
-			background: #cccccc;
-			border-radius: 10px;
+			display: block;
+			width: 100%;
+			height: 100%;
+			border-radius: 12px;
 		}
 	}
-	.mine_info{
-		.mine_btn{
+	.header_right{
+		.operating{
 			display: flex;
 			align-items: center;
-			text-align: center;
-			>view{
-				padding: 3px 10px;
+			font-size: 13px;
+			color: #737373;
+			flex-direction: row-reverse;
+			.operating_left{
+				border: 1px solid #ededf0;
 				border-radius: 8px;
-				border: 1px solid #DADDE2;
-				font-size: 13px;
-				color: #484848;
-				font-weight: 600;
+				padding: 5px 12px;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				.operating_left_img{
+					width: 14px;
+					height: 14px;
+					margin-right: 3px;
+					>image{
+						width: 100%;
+						height: 100%;
+						display: block;
+					}
+				}
+				.share{
+					font-size: 12px;
+					>button{
+						color: #737373;
+						margin: 0px;
+						padding: 0px;
+						font-size: 13px;
+						line-height: normal;
+						background: #ffffff;
+						border: none;
+					}
+					>button::after{
+						border: none;
+					}
+				}
 			}
-			>view:first-child{
-				margin-right: 8px;
-			}
-		}
-		.mine_history{
-			text-align: center;
-			display: flex;
-			align-items: center;
-			justify-content: space-around;
-			margin-top: 15px;
-			.history_list{
-				font-size: 13px;
-				color: #737373;
-				>view:first-child{
-					font-size: 20px;
-					font-weight: 600;
-					color: #484848;
+			.operating_right{
+				border-radius: 8px;
+				border: 1px solid #ededf0;
+				padding: 5px 12px;
+				margin-left: 7px;
+				.share{
+					font-size: 12px;
+					>button{
+						color: #737373;
+						margin: 0px;
+						padding: 0px;
+						font-size: 13px;
+						line-height: normal;
+						background: #ffffff;
+						border: none;
+					}
+					>button::after{
+						border: none;
+					}
 				}
 			}
 		}
+		.history{
+			display: flex;
+			font-size: 20px;
+			color: #484848;
+			align-items: center;
+			padding-top: 12px;
+			.history_list{
+				display: flex;
+				align-items: center;
+				margin-right: 8px;	
+				>text{
+					display: inline-block;
+					font-size: 13px;
+					color: #737373;
+				}
+			}
+			.history_list:last-child{
+				margin: 0;
+			}
+		}
+	}
+}
+.user_name{
+	display: flex;
+	align-items: center;
+	font-size: 20px;
+	color: #484848;
+	font-weight: 600;
+	padding-top: 6px;
+	>text{
+		display: inline-block;
+		font-size: 13px;
+		color: #737373;
+		margin-right: 5px;
+		font-weight: normal;
+	}
+}
+.user_type{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	.age{
+		font-size: 10px;
+		color: #ffffff;
+		background: #73C2FF;
+		padding: 0 10px;
+		border-radius: 10px;
+	}
+	.certification{
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		.certification_img{
+			width: 60px;
+			height: 16px;
+			margin-left: 8px;
+			>image{
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+}
+.car_code{
+	margin-top: 5px;
+	background: linear-gradient(to right, #00C6FF , #4287FF);
+	border-radius: 12px;
+	font-size: 14px;
+	color: #ffffff;
+	display: inline-block;
+	padding: 0 12px;
+	>text{
+		font-size: 11px;
+		display: inline-block;
 	}
 }
 .mine_details{
@@ -73,7 +179,6 @@
 	align-items: center;
 	justify-content: space-around;
 	border-bottom: 1px solid #e1e1e1;
-	box-shadow: 0px 2px 1px #cccccc;
 	.switch_list{
 		padding: 10px 0;
 		border-bottom: 2px solid #ffffff;
@@ -88,6 +193,24 @@
 
 .content{
 	background: #F7F6F6;
+	min-height: 300px;
+	.over_list{
+		position: relative;
+	}
+	.delete_list{
+		background: red;
+		font-size: 16px;
+		color: #ffffff;
+		width: 100px;
+		height: 100%;
+		text-align: center;
+		line-height: 166px;
+		position: absolute;
+		right: 0;
+		top: 0;
+		z-index: -1;
+		border-radius: 0px 8px 8px 0px;
+	}
 	.stroke_list{
 		background: #ffffff; 
 		border-radius: 10px;
@@ -112,7 +235,6 @@
 					display: block;
 					width: 40px;
 					height: 40px;
-					background: #cccccc;
 					border-radius: 50%;
 				}
 			}
@@ -169,10 +291,114 @@
 						height: 20px;
 						margin-right: 10px;
 						display: block;
-						background: #cccccc;
 						border-radius: 100%;
 					}
 				}
+			}
+		}
+	}
+}
+
+.attention{
+	padding: 12px;
+	padding-top: 0px;
+	.attention_list{
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-bottom: 1px solid #ededf0;
+		padding: 12px 0;
+		.people_info{
+			display: flex;
+			align-items: center;
+			.people_img{
+				width: 60px;
+				height: 60px;
+				>image{
+					display: block;
+					width: 100%;
+					height: 100%;
+					border-radius: 10px;
+					background: #cccccc;
+				}
+			}
+			.people_details{
+				font-size: 10px;
+				margin-left: 5px;
+				.people_name{
+					display: flex;
+					align-items: center;
+					font-size: 17px;
+					color: #737373;
+					>text{
+						display: inline-block;
+						font-size: 10px;
+						margin-left: 5px;
+					}
+				}
+				.people_code{
+					background: linear-gradient(to right, #00C6FF , #4287FF);
+					padding: 0 7px;
+					border-radius: 10px;
+					color: #ffffff;
+					text-align: center;
+				}
+				.people_pass_name{
+					font-size: 10px;
+					color: #737373;
+				}
+			}
+		}
+		.people_lastTime{
+			font-size: 13px;
+			color: #B9BDC3;
+			text-align: right;
+		}
+	}
+}
+
+.personal{
+	padding: 12px;
+	padding-top: 0px;
+	.personal_info{
+		padding: 12px 0;
+		font-size: 16px;
+		color: #737373;
+		border-bottom: 1px solid #ededf0;
+		.personal_title{
+			font-size: 13px;
+			color: #484848;
+		}
+	}
+	.personal_car{
+		padding: 12px 0;
+		border-bottom: 1px solid #ededf0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.car_details{
+			font-size: 20px;
+			color: #484848;
+			font-weight: 600;
+			>view:last-child{
+				background: linear-gradient(to right, #00C6FF , #4287FF);
+				padding: 0 10px;
+				border-radius: 7px;
+				color: #ffffff;
+				text-align: center;
+				font-size: 13px;
+				font-weight: normal;
+			}
+		}
+		.car_img{
+			width: 78px;
+			height: 78px;
+			>image{
+				border-radius: 12px;
+				width: 100%;
+				height: 100%;
+				background: #cccccc;
+				display: block;
 			}
 		}
 	}
@@ -196,4 +422,54 @@
 .over{
 	border: 1px solid rgb(208, 2, 27);
 	color: rgb(208, 2, 27);
+}
+
+.pop_up_layer{
+	position: fixed;
+	top: 0;
+	.close{
+		width: 100%;
+		background: rgba(0, 0, 0, .5);
+	}
+	.operating_list{
+		background: #ffffff;
+		text-align: center;
+		font-size: 18px;
+		color: #484848;
+		>view{
+			border-bottom: 1px solid #ededf0;
+			padding: 8px 0;
+		}
+		>view:nth-of-type(4){
+			border-bottom: 5px solid #ededf0;
+		}
+		>view:active{
+			background: #ededf0;
+		}
+	}
+}
+
+
+.loading{
+	width: 100%;
+	.loading_img{
+		width: 100%;
+		height: 260px;
+		>image{
+			width: 100%;
+			height: 100%;
+			display: block;
+			margin: 0 auto;
+			margin-top: 30px;
+		}
+	}
+}
+
+.pull_up_loading{
+	padding: 12px;
+	text-align: center;
+}
+
+.delete_index{
+	z-index: 1 !important;
 }

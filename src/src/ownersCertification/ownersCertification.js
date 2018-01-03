@@ -28,49 +28,54 @@ Page({
 		})
 	},
 	getDriverLicense: function () {  
-	    var _this = this;  
+		let self = this
 	    wx.chooseImage({
 		  success: function(res) {
 		    var tempFilePaths = res.tempFilePaths
-		    console.log(tempFilePaths,'----???')
-		    wx.uploadFile({
-		      url: 'https://t1.driver.quchuxing.com.cn/driver/upload/audit_weapp', //仅为示例，非真实的接口地址
-		      filePath: tempFilePaths[0],
-		      name: 'driverLicencePictureMain',
-		      header: {
-		      	'content-type': 'multipart/form-data'
-		      },
-		      success: function(res){
-		        var data = res.data
-		        console.log(data,'------------data')
-		        //do something
-		      }
+		    self.setData({
+		    	driver_licence: tempFilePaths
 		    })
 		  }
 		}) 
 	},
-	getDrivingLicense: function () {  
-	    var _this = this;  
-	    wx.chooseImage({  
-	      count: 1, // 默认9  
-	      success: function (res) {
-	      	wx.showToast({
-			  title: '上传成功',
-			  icon: 'success',
-			  duration: 2000
-			})
-	        _this.setData({  
-	          DrivingLicense: res.tempFilePaths  
-	        })  
+	submitDriverLicense: function(){
+		const { driver_licence } = this.data
+	    wx.uploadFile({
+	      url: 'https://v1.driver.quchuxing.com.cn/driver/upload/audit_weapp', 
+	      filePath: driver_licence ? driver_licence[0] : '',
+	      name: 'driverLicencePictureMain',
+	      header: {
+	      	'content-type': 'multipart/form-data'
 	      },
-	      fail: function(e){
-	      	wx.showToast({
-			  title: '上传失败',
-			  icon: 'success',
-			  duration: 2000
-			})
+	      success: function(res){
+	       
 	      }
-	    })  
+	    })
+	},
+	getDrivingLicense: function () {  
+		let self = this
+	    wx.chooseImage({
+		  success: function(res) {
+		    var tempFilePaths = res.tempFilePaths
+		    self.setData({
+		    	driving_licence: tempFilePaths
+		    })
+		  }
+		}) 
+	},
+	submitDrivingLicense: function(){
+		const { driver_licence } = this.data
+	    wx.uploadFile({
+	      url: 'https://v1.driver.quchuxing.com.cn/driver/upload/audit_weapp', 
+	      filePath: driver_licence ? driver_licence[0] : '',
+	      name: 'drivingLicensePictureMain',
+	      header: {
+	      	'content-type': 'multipart/form-data'
+	      },
+	      success: function(res){
+	       
+	      }
+	    })
 	},
 	submit: function(){
 		const { car_code, car_model, car_color, DriverLicense, DrivingLicense } = this.data
@@ -105,6 +110,8 @@ Page({
 		driver_api.postCarInfo({data: parmas}).then(json => {
 			let data = json.data
 			// if(data.status == -2){
+				this.submitDrivingLicense()
+				this.submitDriverLicense()
 				wx.showToast({
 				  title: '成功',
 				  icon: 'success',

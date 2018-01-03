@@ -30,7 +30,7 @@
 			</block>
 			<block wx:else>
 				<view class="car_acroll">
-					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" style="height: 120px;">
+					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" style="height: 120px; overflow: scroll;">
 						<view wx:for-items="{{ match_cars }}" wx:key="{{ index }}" data-id="{{ item.travelId }}" bindtap="matchCarsInfo" class="car_list {{ item.travelId == car_id ? 'car_list_active' : ''}}">
 							<image src="{{ item.driverPicture }}"></image>
 						</view>
@@ -39,22 +39,23 @@
 						<view class="car_info_left">
 							<view class="match_car_name">
 								<view class="match_name">{{ matchCar.driverName }}</view>
-								<view class="match_old">{{ matchCar.sex }}岁</view>
+								<view class="match_old">{{ matchCar.sex || '0' }}岁</view>
 								<view class="match_time">{{ matchCar.lastTimeOnline }}</view>
 							</view>
-							<view class="match_car_code">{{ matchCar.car }}</view>
+							<block wx:if="{{ matchCar.car != null }}">
+								<view class="match_car_code">{{ matchCar.car }}</view>
+							</block>
 						</view>
 						<view class="car_info_right">
 							<view class="match_time">{{ matchCar.startTimeTxt }}</view>
 							<view class="match_seats">
 								<view>座位数</view>
-								<view class="match_seats_img" wx:for-items="{{ seat_img }}" wx:key="{{ index }}">
-									<block wx:if="{{ item.type }}">
-										<image src="{{ item.img_fasle }}"></image>
-									</block>
-									<block wx:else>
-										<image src="{{ item.img_true }}"></image>
-									</block>
+								<view class="match_seats_img" wx:for-items="{{ matchCar.seat_true }}" wx:key="{{ index }}">
+									<image src="{{ item.img }}"></image>
+								</view>
+
+								<view class="match_seats_img" wx:for-items="{{ matchCar.seat_false }}" wx:key="{{ index }}">
+									<image src="{{ item.img }}"></image>
 								</view>
 							</view>
 						</view>
@@ -73,7 +74,7 @@
 			</block>
 			<block wx:else>
 				<view class="car_acroll">
-					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" style="height: 120px;">
+					<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex;  overflow: scroll;" style="height: 120px;">
 						<view class="car_list {{ item.passengerTravelId == people_id ? 'car_list_active' : ''}}" wx:for-items="{{ shunPassengers }}" wx:key="{{ index }}" bindtap="peopleDetails" data-id="{{ item.passengerTravelId }}">
 							<image src="{{ item.picture }}"></image>
 						</view>
@@ -82,13 +83,13 @@
 						<view class="car_info_left">
 							<view class="match_car_name">
 								<view class="match_name">{{ people_info.nickName }}</view>
-								<view class="match_old">{{ people_info.age }}</view>
+								<view class="match_old">{{ people_info.age || '0' }}岁</view>
 								<view class="match_time">{{ people_info.latestActiveTime }}</view>
 							</view>
 							<view class="ride_number">乘车人数<text class="setas_people">{{ people_info.seats }}</text></view>
 						</view>
 						<view class="car_info_right">
-							<view class="match_time">今天 08:30</view>
+							<view class="match_time">{{ people_info.startTimeTxt }}</view>
 						</view>
 					</view>
 				</view>
@@ -96,7 +97,7 @@
 		</block>
 		<view class="foot_btn">
 			<block wx:if="{{ (isMatchingTravel != 1 && match_active == 'car') || ( !isMatch && match_active == 'people')}}">
-				<button class="no_match">
+				<button class="no_match" open-type="share" data-id="share">
 					<view class="share_no_match">
 						<image src="../../images/icon_share@3x.png"></image>
 					</view>
@@ -117,12 +118,14 @@
 				</view>
 			</block>
 			<block wx:if="{{ isMatch && match_active == 'people' }}">
-				<button class="no_match">
-					<view class="share_no_match">
-						<image src="../../images/icon_like@3x.png"></image>
-					</view>
-					<view bindtap="attention" class="share_no_match_text">关注</view>
-				</button>
+				<form bindsubmit="attention" report-submit="true">
+					<button formType="submit" class="no_match">
+						<view class="share_no_match">
+							<image src="../../images/icon_like@3x.png"></image>
+						</view>
+							<view class="share_no_match_text">关注</view>
+					</button>
+				</form>
 			</block>
 		</view>
 	</view>
@@ -144,71 +147,98 @@
 			</view>
 		</block>
 		<view class="people_acroll">
-			<block wx:if="{{ booked_active == 'shun' }}">
-				<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
-				<!--  display: inline-block-->
-				  <view wx:for-items="{{ shunPassengers }}" wx:key="{{ index }}" data-id="{{ item.passengerTravelId }}" bindtap="peopleDetails" class="people_list {{ item.passengerTravelId == people_id ? 'people_list_active' : ''}}">
-				  		<image src="{{ item.picture }}"></image>
-				  </view>
-				</scroll-view>
-				<view class="passenger_info">
-					<view class="details">
-						<view class="name">{{ people_info.nickName }}</view>
-						<view class="age">{{ people_info.age }}</view>
-						<view class="time">{{ people_info.latestActiveTime }}</view>
-					</view>
-					<view class="go_time">今天08:30</view>
-				</view>
-				<view class="number_passenger">乘车人数 <text>{{ people_info.seats }}</text></view>
-			</block>
-			<block wx:else>
-				<view class="booked">
-					<view class="title">亲爱的,今天08:30出发哦</view>
-					<view class="booked_scroll">
-						<view bindtap="matchCarsInfo" class="booked_list booked_list_active">
-							<image src="{{ item.driverPicture }}"></image>
-						</view>
-						<view bindtap="matchCarsInfo" class="booked_list">
-							<image src="{{ item.driverPicture }}"></image>
-						</view>
-						<view bindtap="matchCarsInfo" class="booked_list">
-							<image src="{{ item.driverPicture }}"></image>
-						</view>
-						<view bindtap="matchCarsInfo" class="booked_list">
-							<image src="../../images/img_invite.jpg"></image>
-						</view>
-					</view>
-					<view class="details">
-						<view class="people_info">
-							<view class="name">王晓明</view>
-							<view class="ageOftime">
-								<view>34岁</view>
-								<view>10分钟前</view>
+				<block wx:if="{{ booked_active == 'shun' }}">
+					<block wx:if="{{ isMatch }}">
+						<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex;  overflow: scroll;" >
+						<!--  display: inline-block-->
+						  <view wx:for-items="{{ shunPassengers }}" wx:key="{{ index }}" data-id="{{ item.passengerTravelId }}" bindtap="peopleDetails" class="people_list {{ item.passengerTravelId == people_id ? 'people_list_active' : ''}}">
+						  		<image src="{{ item.picture }}"></image>
+						  </view>
+						</scroll-view>
+						<view class="passenger_info">
+							<view class="details">
+								<view class="name">{{ people_info.nickName }}</view>
+								<view class="age">{{ people_info.age || '0' }}</view>
+								<view class="time">{{ people_info.latestActiveTime }}</view>
 							</view>
+							<view class="go_time">{{ people_info.startTimeTxt }}</view>
 						</view>
-						<view class="btn_type">
-							<image src="../../images/btn_phone@3x.png"></image>
-							<image src="../../images/btn_late.png"></image>
-							<image src="../../images/btn_free.png"></image>
+						<view class="number_passenger">乘车人数 <text>{{ people_info.seats }}</text></view>
+					</block>
+				</block>
+				<block wx:else>
+					<view class="booked">
+						<block wx:if="{{ templeTime == '已结束' }}">
+							<view class="title">亲爱的, 行程{{ templeTime }}</view>
+						</block>
+						<block wx:else>
+							<view class="title">亲爱的,{{ templeTime }}出发哦</view>
+						</block>
+						<view class="booked_scroll">
+							<view class="booked_list {{ item.phone == passenger_info_id ? 'booked_list_active' : '' }}" wx:for-items="{{ passenger_details }}" wx:key="{{ index }}"  data-id="{{ item.phone }}" bindtap="getPassengerInfo">
+								<image src="{{ item.passengerPicture }}"></image>
+							</view>
+							<block wx:if="{{ passenger_details.length < 4 }}">
+								<view class="booked_list">
+									<button class="share_remaining" bindtap="shareRemaining" open-type="share">
+										<image src="../../images/img_invite.jpg"></image>
+									</button>
+								</view>
+							</block>
 						</view>
+						<block wx:if="{{ passenger_details.length != 0 }}">
+							<view class="details">
+								<view class="people_info">
+									<view class="name">{{ passenger_info.nickName }}</view>
+									<view class="ageOftime">
+										<view>{{ passenger_info.age || '0' }}岁</view>
+										<view>{{ passenger_info.lastTimeOnline }}</view>
+									</view>
+								</view>
+								<view class="btn_type">
+									<image bindtap="gotoPassengerPhone" src="../../images/btn_phone@3x.png"></image>
+									<image src="../../images/btn_late.png"></image>
+									<image src="../../images/btn_free.png"></image>
+								</view>
+							</view>
+						</block>
 					</view>
-				</view>
-			</block>
+				</block>
 		</view>
-		<view class="passenger_btn">
+		<view class="passenger_btn" style="background: #ffffff;">
 			<block wx:if="{{ booked_active != 'car' }}">
 				<view class="passenger">
-					<view class="share_pass_img">
+					<view class="share_pass_img" bindtap="callPeoplePhone">
 						<image src="../../images/btn_phone@3x.png"></image>
 					</view>
-					<view class="share_btn">邀请上车</view>
+					<block wx:if="{{ people_info.invite }}">
+						<view class="share_btn">已邀请</view>
+					</block>
+					<block wx:else>
+						<view class="share_btn" bindtap="invitationToBoard">邀请上车</view>
+					</block>
 				</view>
 			</block>
 			<block wx:else>
 				<view class="booked_btn">
-					<view>客服</view>
-					<view>导航</view>
-					<view>完成行程</view>
+					<view bindtap="callCustomerService">客服</view>
+					<block wx:if="{{ !tembleTime_active }}">
+						<block wx:if="{{ templeTime == '已结束' }}">
+							<view style="color: #888888;">已结束</view>
+						</block>
+						<block wx:else>
+							<view data-id="{{ travelId }}" bindtap="startCar">发车</view>
+						</block>
+					</block>
+					<block wx:else>
+						<view style="color: #888888;">发车</view>
+					</block>
+					<block wx:if="{{ car_travel_active }}">
+						<view bindtap="updateTravel" data-text="over">取消行程</view>
+					</block>
+					<block wx:else>
+						<view bindtap="updateTravel" data-text="update">完成行程</view>
+					</block>
 					<view>分享</view>
 				</view>
 			</block>
@@ -220,21 +250,28 @@
 <block wx:if="{{ code_type == 'details' }}">
 	<view class="details" style="height: 294px;">
 		<view class="detail_title">
-			<view>30分钟后自动确认上车</view>
-			<view>延时</view>
+			<view>{{ orderInfo.startTime }}</view>
+			<block wx:if="{{ !passenger_up_type }}">
+				<block wx:if="{{ orderInfo.passengers[0].onthetrain_active }}">
+					<view class="up_car_type">已上车</view>
+				</block>
+				<block wx:else>
+					<view class="up_car_type" bindtap="clickOnTheTrain">上车</view>
+				</block>
+			</block>
 		</view>
 		<view class="nav">
 			<view class="nav_btn">
 				<view class="nav_img">
 					<image src="../../images/btn_card_line@3x.png"></image>
 				</view>
-				<view class="nav_address">导航至上车点</view>
+				<view class="nav_address" bindtap="nav_up">导航至上车点</view>
 			</view>
 			<view class="nav_btn">
 				<view class="nav_img">
 					<image src="../../images/btn_card_line@3x.png"></image>
 				</view>
-				<view class="nav_address">导航至下车点</view>
+				<view class="nav_address" bindtap="nav_down">导航至下车点</view>
 			</view>
 		</view>
 		<view class="swiper">
@@ -249,38 +286,45 @@
 			    			<view class="car_detail">
 			    				<view class="car_name">{{ orderInfo.driverName }}</view>
 			    				<view class="car_age">
-			    					<view>34岁</view>
-			    					<view>10分钟前</view>
+			    					<view>{{ orderInfo.age || '0' }}</view>
+			    					<view>{{ orderInfo.lastTimeOnline }}</view>
 			    				</view>
-			    				<view class="car_code"><text>{{ orderInfo.carNumber }}</text> {{ orderInfo.car }}</view>
+			    				<block wx:if="{{ orderInfo.carNumber != null && orderInfo.car != null }}">
+			    					<view class="car_code"><text>{{ orderInfo.carNumber }}</text> {{ orderInfo.car }}</view>
+			    				</block>
 			    			</view>
 			    		</view>
 			    		<view class="car_info_right">
-			    			<view class="car_time">今天 10:30</view>
-			    			<view class="car_phone">
+			    			<view class="car_time">{{ orderInfo.startTime }}</view>
+			    			<view class="car_phone" bindtap="callDriverPhone">
 			    				<image src="../../images/btn_phone@3x.png"></image>
 			    			</view>
 			    		</view>
 			    	</view>
-			    	<view class="guide">左滑查看同车乘客</view>
+			    	<view class="guide">左滑查看同车乘客{{ left_text }}</view>
 			    </swiper-item>
 			    <swiper-item>
 			    	<view class="passenger">
 			    		<view class="passenger_title">同车乘客</view>
 			    		<view class="passenger_list">
-			    			<image wx:for-items="{{ orderInfo.passengerPicture }}" wx:key="{{ index }}" data-id="{{ item.phone }}" src="{{ item.passengerPicture }}"></image>
+			    			<image wx:for-items="{{ orderInfo.passengers }}" wx:key="{{ index }}" data-id="{{ item.phone }}" src="{{ item.passengerPicture }}"></image>
 			    		</view>
 			    	</view>
-			    	<view class="guide">右滑返回查看车主</view>
+			    	<view class="guide">{{ right_text }}右滑返回查看车主</view>
 			    </swiper-item>
 			  <!-- </block> -->
 			</swiper>
 		</view>
 		<view class="detail_foot_btn">
 			<view class="detail_foot_btn_type">
-				<view>客服</view>
-				<view>车主迟到</view>
-				<view>取消行程</view>
+				<view bindtap="callCustomerService">客服</view>
+				<view bindtap="markedLate">车主迟到</view>
+				<block wx:if="{{ orderInfo.passengers[0].onthetrain_active }}">
+					<view bindtap="passengerDown">完成行程</view>
+				</block>
+				<block wx:else>
+					<view bindtap="passenger_cancel">取消行程</view>
+				</block>
 				<view>分享</view>
 			</view>
 		</view>

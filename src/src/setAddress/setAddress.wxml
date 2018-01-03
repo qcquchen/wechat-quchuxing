@@ -1,5 +1,5 @@
 
-<block wx:if="{{ type == 'home' }}">
+<block wx:if="{{ type == 'home' || type == 'other' }}">
 	<view class="header">先设置家的地址哦</view>
 
 	<view class="set_home">
@@ -12,7 +12,7 @@
 		<view class="home_address" data-id="home" bindtap="setAddress">{{ keywords || '输入您的家庭地址' }}</view>
 	</view>
 </block>
-<block wx:if="{{ type == 'company' }}">
+<block wx:if="{{ type == 'company' || type == 'other' }}">
 	<view class="header">先设置公司的地址哦</view>
 
 	<view class="set_home">

@@ -21,16 +21,40 @@ Page({
 			location: location,
 			keywords: keywords
 		})
-		this.detectionAddress()
+		if(!option.location){
+			this.detectionAddress()
+		}
 	},
 	detectionAddress:function(){
 		const { token } = app.globalData.entities.loginInfo
+		const { address_type } = app.globalData.entities
         driver_api.getSearchAddress({
           data: {
             token: token
           }
         }).then(json => {
-          console.log(json,'--------------json')
+        	if(json.data.status == -1){
+        		return
+        	}
+        	let data = json.data.result
+        	if(address_type == 'home'){
+        		if(data.addr_home != null || data.location_home != null){
+	        		this.setData({
+						location: data.location_home,
+						keywords: data.addr_home
+					})
+        		}
+				return
+        	}
+        	if(address_type == 'company'){
+        		if(data.addr_company != null || data.location_company != null){
+	        		this.setData({
+						location: data.location_company,
+						keywords: data.addr_company
+					})
+        		}
+				return
+        	}
         })
 	},
 	setAddress:function(e){
@@ -42,7 +66,6 @@ Page({
 	submit_btn:function(){
 		const { type, location, keywords } = this.data
 		const { token } = app.globalData.entities.loginInfo
-		let new_location = location.split(',').map(json => Number(json))
 		let parmas = {}
 		if( !location && !keywords ){
 			wx.showModal({
@@ -59,12 +82,12 @@ Page({
 		}
 
 		if( type == 'home' ){
-			parmas = Object.assign({}, { token: token }, {addr_home: keywords}, { location_home: new_location })
+			parmas = Object.assign({}, { token: token }, {addr_home: keywords}, { location_home: location })
 			this.submitAddress(parmas)
 			return
 		}
 		if( type == 'company' ){
-			parmas = Object.assign({}, { token: token }, {addr_company: keywords}, { location_company: new_location })
+			parmas = Object.assign({}, { token: token }, {addr_company: keywords}, { location_company: location })
 			this.submitAddress(parmas)
 			return
 		}

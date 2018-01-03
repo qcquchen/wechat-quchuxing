@@ -85,9 +85,9 @@ swiper{
           color: #383838;
           font-weight: 600;
           width: 80px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          // white-space: nowrap;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
         }
       }
     }
@@ -104,7 +104,7 @@ swiper{
     font-size: 16px;
     margin-bottom: 10px;
     .call_off{
-      flex: 3;
+      flex: 2;
       border: 1px solid #383838;
       color: #383838;
       border-radius: 15px;
@@ -113,13 +113,15 @@ swiper{
       margin: 0 15px;
       margin-right: 0;
     }
+    >form{
+      flex: 8;
+    }
     .affirm{
-      flex: 7;
       background: #383838;
       border-radius: 15px;
       color: #ffffff;
       text-align: center;
-      padding: 10px 15px;
+      /*padding: 10px 15px;*/
       margin: 0 15px;
     }
   }
@@ -288,294 +290,110 @@ swiper{
 
 .tab_index{
   width: 100%;
-  height: 100%;
+  height: 141px;
   background: #F6F5EA;
+  position: fixed;
+  bottom: 0;
   overflow: hidden;
-  .index_common{
-      width: 80%;
-      height: 45px;
-      margin: 0 auto;
-      margin-top: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 15px 20px;
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #EDEDED;
-      z-index: 999;
-  }
-  .selct_work_home{
-    font-size: 19px;
-    font-weight: 600;
-    color: #2e2e2e;
-    .select{
-      display: flex;
-      align-items: center;
-      >image{
-        width: 40px;
-        height: 40px;
-        display: block;
-        margin-right: 10px;
-      }
-    }
-  }
-  .journey_list{
-    .journey_img{
-      flex: 2;
-      image{
-        display: block;
-        width: 40px;
-        height: 40px;
-        margin-right: 10px;
-      }
-    }
-    .journey_news{
-      flex: 8;
-      .journey_title{
-        font-size: 15px;
-        width: 150px;
-        color: #2e2e2e;
-        font-weight: 600;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .journey_info{
-        font-size: 10px;
-        color: #888888;
-        width: 170px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        .car_name{
-          font-size: 13px;
-          margin-right: 5px;
-          display: block;
-          line-height: 15px;
-          float: left;
-        }
-        .car_code{
-          color: #ffffff;
-          margin-right: 3px;
-          padding: 0px 5px;
-          border-radius: 5px;
-          display: inline-block;
-          background: linear-gradient(to right, #00C6FF , #4287FF);
-        }
-      }
-    }
-  }
-}
-
-.wx-swiper-dot{
-  width: 5px !important;
-  height: 5px !important;
-}
-
-.match{
-  width: 100%;
-  height: 100%;
-  position: relative;
-  .match_switch{
-    border-bottom: 1px solid #DADDE2;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 15px;
-    font-size: 13px;
-    color: #737373;
-    padding-bottom: 0px;
-    >view{
-      border-bottom: 3px solid #ffffff;
-      padding-bottom: 10px;
-    }
-  }
-  .watch_switch_active{
-    color: #484848;
-    border-bottom: 3px solid #000000 !important;
-  }
-  .search_match{
-    text-align: center;
-    .loading_img{
-      width: 100%;
-      height: 50px;
-      padding: 30px 0 20px 0;
-      >image{
-        width: 50px;
-        height: 50px;
-        display: blcok;
-        margin: 0 auto;
-      }
-    }
-    .loading_text{
-      font-size: 17px;
-      color: #484848;
-      font-weight: 600;
-    }
-    .watch_time{
-      font-size: 13px;
-      color: #737373;
-      margin-top: 5px;
-    }
-  }
-  .share_It{
+/*  // .index_common{
+  //     width: 80%;
+  //     height: 45px;
+  //     margin: 0 auto;
+  //     margin-top: 5px;
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: space-around;
+  //     padding: 15px 20px;
+  //     background: #ffffff;
+  //     border-radius: 10px;
+  //     border: 1px solid #EDEDED;
+  //     z-index: 999;
+  // }
+  // .selct_work_home{
+  //   font-size: 19px;
+  //   font-weight: 600;
+  //   color: #2e2e2e;
+  //   .select{
+  //     display: flex;
+  //     align-items: center;
+  //     >image{
+  //       width: 40px;
+  //       height: 40px;
+  //       display: block;
+  //       margin-right: 10px;
+  //     }
+  //   }
+  // }*/
+  .code_info{
     width: 100%;
-    position: absolute;
-    bottom: 0;
-    .share_btn{
-      margin: 15px;
+    height: 100%;
+    border-radius: 12px 12px 0 0;
+    background: #ffffff;
+    .code_info_title{
+      border-bottom: 1px solid #ededf0;
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      .code_icon{
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #73C2FF;
+        >image{
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ffffff;
+          display: block;
+        }
+      }
+      .code_text{
+        font-size: 13px;
+        color: #484848;
+      }
+    }
+    .code_btn{
+      margin: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      color: #484848;
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #DADDE2;
-      >image{
-        width: 20px;
-        height: 20px;
-        display: block;
-        margin-right: 8px;
-      }
-    }
-  }
-  .car_acroll{
-    width: 100%;
-    .car_list{
-      width: 80px;
-      height: 80px;
-      margin: 15px;
-      display: inline-block;
-      opacity: 0.8;
-      margin-bottom: 22px;
-      >image{
-        width: 100%;
-        height: 100%;
-        display: block;
-        border-radius: 15px;
-        /*overflow: visible;*/
-        box-shadow: 0px 0px 3px #000000;
-      }
-    }
-    .car_list_active{
-      width: 100px;
-      height: 100px;
-      opacity: 1;
-      margin-bottom: 15px;
-    }
-    .car_info{
-      padding: 15px;
-      padding-top: 0;
-      display: flex;
-      justify-content: space-between;
-      .car_info_left{
-        .match_car_name{
-          display: flex;
-          align-items: center;
-          .match_name{
-            font-size: 20px;
-            color: #484848;
-            margin-right: 3px;
-          }
-          .match_old{
-            background: #9AD3FF;
-            color: #ffffff;
-            font-size: 10px;
-            padding: 0 10px;
-            border-radius: 10px;
-            margin-right: 3px;
-          }
-          .match_time{
-            font-size: 10px;
-            color: #737373;
-          }
-        }
-        .match_car_code{
-          border-radius: 8px;
-           background: linear-gradient(to right, #00C6FF , #4287FF);
-           font-size: 13px;
-           color: #ffffff;
-           width: 125px;
-           text-align: center;
-           >text{
-            font-size: 13px;
-           }
-        }
-        .ride_number{
-          color: #737373;
-          font-size: 10px;
-          display: flex;
-          align-items: center;
-          .setas_people{
-            color: #484848;
-            font-size: 17px;
-            margin-left: 5px;
-          }
-        }
-      }
-      .car_info_right{
-        .match_time{
-          font-size: 17px;
-          color: #484848;
-          text-align: right;
-        }
-        .match_seats{
-          display: flex;
-          align-items: center;
-          margin-top: 5px;
-          >view{
-            font-size: 10px;
-            margin-right: 5px;
-          }
-          .match_seats_img{
-            width: 20px;
-            height: 20px;
-            >image{
-              width: 100%;
-              height: 100%;
-              display: block;
-              border-radius: 50%;
-            }
-          }
-          >view:last-child{
-            margin-right: 0;
-          }
-        }
-      }
-    }
-  }
-  .match_car_btn{
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    margin-bottom: 10px;
-    .match_car_share, .match_car_phone{
-      width: 50px;
-      height: 50px;
-      >image{
-        display: block;
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-      }
-    }
-    .match_car_submit{
-      color: #ffffff;
-      font-size: 16px;
       text-align: center;
-      background: #484848;
-      border-radius: 8px;
-      height: 50px;
-      line-height: 50px;
-      padding: 0 50px
+      .code_btn_home, .code_btn_commpany{
+        background: #484848;
+        padding: 8px 35px;
+        width: 100px;
+        height: 40px;
+        .code_btn_title{
+          color: #ffffff;
+          font-size: 15px;
+        }
+        .code_btn_location{
+          font-size: 10px;
+          white-space: nowrap;
+          color: #737373;
+        }
+      }
+      .code_btn_home{
+        margin-right: 1px;
+        border-radius: 12px 2px 2px 12px;
+      }
+      .code_btn_commpany{
+        margin-left: 1px;
+        border-radius: 2px 12px 12px 2px;
+      }
+      .code_flex_style{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 }
+
 button::after{
   border: none;
 }

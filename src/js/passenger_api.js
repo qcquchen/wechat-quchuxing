@@ -9,7 +9,7 @@ import { _apiPOST, _apiGET, _apiPUT, _apiDELETE } from './apiUtils'
 const REQUEST_TYPE = ['GET','POST','PUT','DELETE']
 
 // export const getActivitiesInfo = (id, options) => _apiGET(`${API_ROOT}/activities/${id}`,options)
-// 
+//
 // 乘客最近行程 /travel/latestOne
 export const getPassengerRecentTrip = (options) => _apiPOST(`${API_ROOT}/travel/latestOne`, options)
 
@@ -24,3 +24,30 @@ export const postMatchPeople = (options) => _apiPOST(`${API_ROOT}/travel/matchin
 
 // 支付
 export const postPay = (options) => _apiPOST(`${API_ROOT}/orders/createlv4`, options)
+
+//  /orders/Travel 行程列表
+export const getMineTraval = (options) => _apiPOST(`${API_ROOT}/orders/travel`, options)
+
+// 乘客关闭匹配 /travel/changeTravelStatus
+export const deleteTraval = (options) => _apiPOST(`${API_ROOT}/travel/changeTravelStatus`, options)
+
+// 取消支付
+export const closeWxPay = (options) => _apiPOST(`${API_ROOT}/orders/cancel`, options)
+
+// 获取价格区间 /orders/computePricelv1
+export const getComputePricelv1 = (options) => _apiPOST(`${API_ROOT}/orders/computePricelv1`, options)
+
+// 乘客取消行程 /orders/refundlv2
+export const deletePeopleTravel = (options) => _apiPOST(`${API_ROOT}/orders/refundlv2`, options)
+
+// /orders/up 乘客标记上车
+export const clickOnTheTrain = (options) => _apiPOST(`${API_ROOT}/orders/up`, options)
+
+// /orders/Travel 查看好友发布的行程
+export const getFriendsItinerary = (options) => _apiPOST(`${API_ROOT}/orders/Travel`, options)
+
+// 乘客完成行程 下车 /orders/down
+export const passengerDown = (options) => _apiPOST(`${API_ROOT}/orders/down`, options)
+
+// 标记车主迟到
+export const markedLate = (options) => _apiPOST(`${API_ROOT}/orders/late`, options)

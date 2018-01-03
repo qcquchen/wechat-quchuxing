@@ -19,12 +19,16 @@
     "src/submitorder/confirmOrder",
 
     "src/ownersCertification/sesameCertification",
-    "src/ownersCertification/ownersCertification"
+    "src/ownersCertification/ownersCertification",
+
+    "src/editInformation/editInformation",
+    "src/myPurse/myPurse",
+    "src/myPurse/addAnAccount"
   ],
   "window": {
-    "navigationBarTextStyle": "white",
+    "navigationBarTextStyle": "black",
     "navigationBarTitleText": "趣出行",
-    "navigationBarBackgroundColor": "#000000",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FFFFFF",
     "enablePullDownRefresh" : false
   },

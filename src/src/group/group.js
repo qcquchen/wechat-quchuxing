@@ -5,11 +5,12 @@ import moment from '../../js/moment'
 import * as amapFile from '../../js/amap-wx'
 
 var app = getApp()
-
+var myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
 Page({
 	data: {
 		nearbyGroup: [],
-		myGroup: []
+		myGroup: [],
+		adminType: 0
 	},
 	onShow(){
 		if(this.data.location){
@@ -23,20 +24,21 @@ Page({
 		wx.showLoading({
 		  title: '加载中',
 		})
-        let myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
+		const { adminType } = app.globalData.entities.loginInfo
         let self = this
 		myAmapFun.getRegeo({
           success:function(data){
-          	let loc = data[0].regeocodeData.aois[0].location
+          	let loc = data[0].regeocodeData.addressComponent.streetNumber.location
 			const { phone } = app.globalData.entities.loginInfo
 			self.getMyGroupList(loc, phone)
 			self.setData({
-				location: loc
+				location: loc,
+				adminType: adminType
 			})
           },
           fail:function(e){
             wx.showToast({
-              title: '获取当前位置失败',
+              title: '获取位置失败',
               icon: 'success',
               duration: 2000
             })
@@ -91,15 +93,40 @@ Page({
 				url: `/src/group/groupPassword?id=${id}&location=${location}`
 			})
 		}else{
-			wx.navigateTo({
-				url: `/src/group/groupIndex?id=${id}`
+			const { phone } = app.globalData.entities.loginInfo
+			driver_api.postJoinGroup({
+				data: {
+					phone: phone,
+					location: location,
+					groupId: id
+				}
+			}).then(json => {
+				console.log(json,'-----------------json')
+				const { result } = json.data.result
+				if(result == -109){
+					wx.showModal({
+		              title: '提示',
+		              content: '密码错误',
+		              showCancel: false,
+		              success: function(res) {
+		                if (res.confirm) {
+		                  console.log('用户点击确定')
+		                }
+		              }
+		            })
+				}else if(result == 1){
+					wx.navigateTo({
+						url: `/src/group/groupIndex?id=${id}&&location=${location}`
+					})
+				}
 			})
 		}
 	},
 	gotoMyGroup: function(e){
+		const { location } = this.data
 		const { currentTarget: { dataset: { id } } } = e
 		wx.navigateTo({
-			url: `/src/group/groupIndex?id=${id}`
+			url: `/src/group/groupIndex?id=${id}&&location=${location}`
 		})
 	}
 })

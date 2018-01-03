@@ -13,8 +13,7 @@ const requestType = (type, url, options = {}) => {
   options.url                    = url
   options.header                 = options.header || {}
   options.header['X-source']     = 'wechat'
-  options.header['Content-Type'] = 'application/json'
-  options.header['X-space-id']   = constants.SPACE_ID
+  options.header['Content-Type'] = 'application/json;charset=utf-8'
 
   if (wx_jwt_token) {
     options.header['Wx-Authorization'] = wx_jwt_token

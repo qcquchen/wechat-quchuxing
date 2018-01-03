@@ -40,6 +40,7 @@ Page({
 			mine_seat: order_info.bookSeats,
 			travelId: order_info.travelId,
 			submit_price: order_info.price * order_info.bookSeats + 1,
+			people_id: order_info.passengerTravelId,
 			seat: seat
 		})
 	},
@@ -63,14 +64,13 @@ Page({
 	switchChange: function (e){
 	    const { submit_price } = this.data
 	    let type = e.detail.value
-	    console.log(type,'---------------type')
 	    this.setData({
 	    	insurance: type,
 	    	submit_price: type ? submit_price + 1 : submit_price - 1
 	    })
 	},
 	submit:function(){
-		const { submit_price, travelId, seat, price, insurance } = this.data
+		const { submit_price, travelId, seat, price, insurance, people_id } = this.data
 		let mine_seat = seat.find(json => json.type == true).number
 		const { token, openId } = app.globalData.entities.loginInfo
 		passenger_api.postPay({
@@ -80,7 +80,8 @@ Page({
 				buyingSafety: insurance,
 				isWX: true,
 				openid: openId,
-				travelId: travelId
+				travelId: travelId,
+				passengerTravelId: people_id
 			}
 		}).then(json => {
 			let data = json.data
@@ -97,11 +98,11 @@ Page({
 				})
 				return
 			}
-			console.log(data,'---------------data')
+			wx.setStorageSync('pay_datails', data)
 			util.setEntities({
-				key: 'pay_datails',
-				value: data
-			})
+		      key: 'setTimeNumber',
+		      value: 180
+		    })
 			wx.navigateTo({
 				url: `/src/submitorder/confirmOrder?price=${price}`
 			})

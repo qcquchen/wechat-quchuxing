@@ -2,7 +2,7 @@
 	<view class="mine_group">
 		<view class="mine_title">我的群</view>
 		<view class="mine_list">
-			<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex" >
+			<scroll-view scroll-x="true" style=" white-space: nowrap; display: flex; overflow:scroll;" >
 				<view class="mine_group_li" wx:for-items="{{ myGroup }}" wx:key="{{ index }}" data-id="{{ item.groupId }}" bindtap="gotoMyGroup">
 					<view class="mine_group_img">{{ item.new_name }}</view>
 					<view class="mine_group_name">{{ item.groupName }}</view>
@@ -39,7 +39,7 @@
 			<view class="nearby_li_right">
 				<block wx:if="{{ item.isHavePwd }}">
 					<view class="pass_img">
-						<image></image>
+						<image src="../../images/icon_lock@3x.png"></image>
 					</view>
 					<view data-id="{{ item.groupId }}" data-active="{{ item.isHavePwd }}" class="pass_text" bindtap="postJoinGroup">加入</view>
 				</block>
@@ -48,7 +48,15 @@
 				</block>
 			</view>
 		</view>
+		<block wx:if="{{ nearbyGroup.length == 0 }}">
+			<view class="loading">
+				<view class="loading_img">
+					<image src="../../images/img_wuxianxi.png"></image>
+				</view>
+			</view>
+		</block>
 	</view>
 </view>
-
-<view class="creat_group" bindtap="creatGroup">建群</view>
+<block wx:if="{{ adminType != 0 }}">
+	<view class="creat_group" bindtap="creatGroup">建群</view>
+</block>

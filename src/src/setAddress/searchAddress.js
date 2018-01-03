@@ -60,13 +60,17 @@ Page({
 	bindSearch: function(e){
 		const { currentTarget: { dataset: { keywords, location } } } = e
 		const { type, groupName } = this.data
-		if(type != 'group'){
+		if(type == 'home' || type == 'company'){
 			wx.redirectTo({
 				url: `/src/setAddress/setAddress?keywords=${keywords}&location=${location}`
 			})
-		}else{
+		}else if(type == 'group'){
 			wx.redirectTo({
 				url: `/src/group/creatGroup?keywords=${keywords}&location=${location}&name=${groupName}`
+			})
+		}else if(type == 'index'){
+			wx.redirectTo({
+				url: `/src/index?keywords=${keywords}&location=${location}`
 			})
 		}
 		util.setEntities({

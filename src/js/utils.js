@@ -94,7 +94,6 @@ export const getStorage = (key) => {
 }
 
 export const setEntities = (options = {}) => {
-  console.log(options,'----------options')
   const app = getApp()
   if (!options) {
     return
@@ -576,12 +575,12 @@ export const getLocation = () => {
 export const saveUserInfo = (res) => {
   let app = getApp()
   const data = Object.assign({}, res.data.wechat_user, res.data.user, res.data)
-  const wechatId = data.wechat_id
+  const wechatId = data.result.Openid
   if(app.globalData.wechatInfo){
     app.globalData.wechatInfo.wechat_id = wechatId
   }
 
-  if (data && (data.wx_jwt_token || data.jwt_token)) {
+  if (data) {
     app.globalData.userInfo = data
     setStorageSync({
       key : 'current_user',
@@ -716,4 +715,32 @@ export const getPrintFileName = (name) => {
   file_name = file_name ? file_name.substr(1, file_name.length) : ''
 
   return file_name
+}
+
+export const seats_true = (data) => {
+  let seat_imgs = []
+  for(let i = 0; i < data; i++){
+    seat_imgs.push({
+      img: '../../images/icon_seat_have@3x.png',
+    })
+  }
+  return seat_imgs
+}
+
+export const seats_false = (data) => {
+  let seat_imgs = []
+  for(let i = 0; i < data; i++){
+    seat_imgs.push({
+      img: '../../images/icon_seat@3x.png',
+    })
+  }
+  return seat_imgs
+}
+
+export const prices = (data) => {
+  let prices = []
+  for(let i = 1; i <= data * 2; i++){
+    prices.push(i)
+  }
+  return prices
 }

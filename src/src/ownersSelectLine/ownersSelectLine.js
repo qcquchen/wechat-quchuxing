@@ -7,8 +7,8 @@ var app = getApp()
 
 Page({
 	data: {
-		latitude: 0,
-      	longitude: 0,
+		latitude: 39.5427,
+        longitude: 116.2317,
       	video_height: 0,
       	type: 0,
       	markers: [],
@@ -31,7 +31,7 @@ Page({
         myAmapFun.getRegeo({
           success:function(data){
             self.setData({
-              startLocation: data[0].regeocodeData.aois[0].location,
+              startLocation: data[0].regeocodeData.addressComponent.streetNumber.location,
               latitude: data[0].latitude,
               longitude: data[0].longitude,
               endLocation: end_location
@@ -52,7 +52,6 @@ Page({
 		this.setData({
 			type: id
 		})
-		console.log(id,'---------------id')
 		util.setEntities({
 	        key: 'strategy',
 	        value: String(id)
@@ -75,7 +74,6 @@ Page({
 				strategy && strategy.map(json => {
 					json.distance = json.distance.toFixed(2)
 				})
-				console.log(strategy[0].strategy,'-------------->>>strategy[0].strategy')
 				util.setEntities({
 			        key: 'strategy',
 			        value: String(strategy[0].strategy)
