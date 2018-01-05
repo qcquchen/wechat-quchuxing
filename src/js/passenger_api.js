@@ -51,3 +51,6 @@ export const passengerDown = (options) => _apiPOST(`${API_ROOT}/orders/down`, op
 
 // 标记车主迟到
 export const markedLate = (options) => _apiPOST(`${API_ROOT}/orders/late`, options)
+
+//https://t1.passenger.quchuxing.com.cn/travel/detailv1 行程详情
+export const travelDetails = (options) => _apiPOST(`${API_ROOT}/travel/detailv1`, options)

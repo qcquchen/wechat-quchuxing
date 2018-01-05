@@ -66,8 +66,6 @@ Page({
         let parmas = Object.assign({}, { token: token }, { start: start_Location }, { end: end_Location }, { strategy: Number(type) })
 		driver_api.getLine({data: parmas}).then(json => {
 			let data = json.data.routes
-			const { route } = json.data.routes
-			let new_pline = route.reverse()
 			if(new_strategy.length == 0){
 				let strategy = []
 				strategy.push(data.strategy0, data.strategy2, data.strategy9)
@@ -93,13 +91,13 @@ Page({
 	            },{
 	              iconPath: '../../images/icon_map_end@3x.png',
 	              id: 1,
-	              longitude: new_pline[0].longitude,
-	              latitude: new_pline[0].latitude,
+	              longitude: end_Location[0],
+	              latitude: end_Location[1],
 	              width: 32,
 	              height: 50
 	            }],
 	            polyline: [{
-		          points: new_pline,
+		          points: data.route,
 		          color:"#57AD68",
 		          width: 10,
 		          dottedLine: false,

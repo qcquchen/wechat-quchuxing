@@ -206,12 +206,12 @@ Page({
         two_controls.position.left = deviceInfo.windowWidth - 65
         two_controls.position.top = deviceInfo.windowHeight - ( 141 + 65 )
         three_controls.position.left = deviceInfo.windowWidth - 65
-        four_controls.position.left = deviceInfo.windowWidth - 65
+        // four_controls.position.left = deviceInfo.windowWidth - 65
         five_controls.position.top = deviceInfo.windowHeight - ( 141 + 65 )
         self.setData({
           video_width: deviceInfo.windowWidth,
           video_height: deviceInfo.windowHeight - 141,
-          controls:[first_controls, two_controls, three_controls, four_controls, five_controls]
+          controls:[first_controls, two_controls, three_controls, five_controls]
         })
         self.getSearchAddressCallBack(token)
         if(select_location.location == null){
@@ -439,7 +439,7 @@ Page({
               value: travelType == '2' ? location_home : location_company
             })
             wx.navigateTo({
-              url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}&&times=${parmas.startTime}`
+              url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}&&times=${parmas.startTime}&travelType=2`
             })
             this.hideCode()
           }, 2000)
@@ -482,7 +482,7 @@ Page({
               value: travelType == '2' ? location_home : location_company
             })
             wx.navigateTo({
-              url: `/src/match/match?id=${travelId}&&type=owner`
+              url: `/src/match/match?id=${travelId}&&type=owner&travelType=1`
             })
             this.hideCode()
           }, 2000)
@@ -494,7 +494,7 @@ Page({
         five_controls.position.top = height - ( 200 + 65 )
 
         const showSelectHomeOfWork_animation = animation
-        showSelectHomeOfWork_animation.opacity(1).height(340).step()
+        showSelectHomeOfWork_animation.opacity(1).height(320).step()
         this.setData({
           selectJourney_animation: showSelectHomeOfWork_animation.export(),
           controls_samll:[five_controls],
@@ -578,8 +578,7 @@ Page({
           let data = json.data.persons.length != 0 ? json.data.persons : json.data.passengers.locations
           let realGoHomeNum = json.data.persons.length != 0 ? json.data.realGoHomeNum : json.data.passengers.goHomeNum
           let realGoCompanyNum = json.data.persons.length != 0 ? json.data.realGoCompanyNum : json.data.passengers.goCompanyNum
-
-          let nearby_text = '附近有 '+ realGoCompanyNum +'位去公司'+ realGoHomeNum + '位回家'
+          let nearby_text = '附近有'+ realGoCompanyNum +'位去公司 '+ realGoHomeNum + '位回家'
           data && data.map(mak => {
             markers_clone.push({
               iconPath: mak.role == 0 ? '../images/icon_map_men@3x.png' : '../images/icon_map_car@3x.png',
@@ -608,7 +607,7 @@ Page({
               borderRadius: 12
             },
             label: {
-              content: text,
+              content: text != '义和庄乡' ? text : '定位中......',
               color: '#4598F7',
               fontSize: 13,
               display: 'ALWAYS',
@@ -620,7 +619,7 @@ Page({
           this.setData({
             markers: markers_clone,
             markers_location: location,
-            label_text: text + ' 出发'
+            label_text: text != '义和庄乡' ? text + '出发' : '定位中......'
           })
         })
       },
@@ -679,41 +678,12 @@ Page({
         passenger_api.getPassengerRecentTrip({
           data: parmas
         }).then(json => {
-          // const { timeArray } = this.data
           let data = json.data
           let hour_index = moment().hour()
-          // if( data.startTime ){
-          //   let data_index = 0
-          //   let minute_index = 0
-
-          //   timeArray[0].splice(0,0, moment().toDate().pattern('MM月dd日'))
-          //   timeArray[0].splice(1,1, moment().add(1, 'days').toDate().pattern('MM月dd日'))
-          //   timeArray[0].splice(2,2, moment().add(2, 'days').toDate().pattern('MM月dd日'))
-
-          //   let data_time = moment(data.startTime).toDate().pattern('MM月dd日')
-          //   let data_time_minute = moment(data.startTime).toDate().pattern('mm分')
-
-          //   timeArray[0].map((json, index) => {
-          //     if(data_time == json){
-          //       data_index = index
-          //     }
-          //   })
-
-          //   timeArray[2].map((json, index) => {
-          //     if(data_time_minute == json){
-          //       minute_index = index
-          //     }
-          //   })
-          //   this.setData({
-          //     timeIndex: [data_index, hour_index, minute_index],
-          //     seat_number_index: data.seats - 1
-          //   })
-          // }else{
-            this.setData({
-              timeIndex: [0, hour_index, 0],
-              seat_number_index: 0
-            })
-          // }
+          this.setData({
+            timeIndex: [0, hour_index, 0],
+            seat_number_index: 0
+          })
         })
         this.getLine('passenger')
         this.setData({
@@ -730,38 +700,10 @@ Page({
         }).then(json => {
           let data = json.data
           let hour_index = moment().hour()
-          // if( data.startTime ){
-          //   let data_index = 0
-          //   let minute_index = 0
-          //   timeArray[0].splice(0,0, moment().toDate().pattern('MM月dd日'))
-          //   timeArray[0].splice(1,1, moment().add(1, 'days').toDate().pattern('MM月dd日'))
-          //   timeArray[0].splice(2,2, moment().add(2, 'days').toDate().pattern('MM月dd日'))
-          //   let data_time = moment(data.startTime).toDate().pattern('yyyy年MM月dd日 HH:mm:ss')
-          //   let data_time_minute = moment(data.startTime).toDate().pattern('mm分')
-          //   timeArray[0].map((json, index) => {
-          //     if(data_time == json){
-          //       data_index = index
-          //     }
-          //   })
-
-          //   timeArray[2].map((json, index) => {
-          //     if(data_time_minute == json){
-          //       minute_index = index
-          //     }
-          //   })
-          //   let select_price_index = select_price.findIndex(json => data.travelPrice == json)
-          //   this.setData({
-          //     timeIndex: [data_index, hour_index, minute_index],
-          //     seat_number_index: data.seats - 1,
-          //     select_price_index: select_price_index,
-          //     switch_identity: 'Owners'
-          //   })
-          // }else{
-            this.setData({
-              timeIndex: [0, hour_index, 0],
-              seat_number_index: 0
-            })
-          // }
+          this.setData({
+            timeIndex: [0, hour_index, 0],
+            seat_number_index: 0
+          })
           this.getLine('Owners')
         })
         this.setData({
@@ -808,9 +750,10 @@ Page({
       },
       getLine:function(type){
         const { token } = app.globalData.entities.loginInfo
-        const { startLocation, location_company, location_home, travelType } = this.data
+        const { addr_home, addr_company, startLocation, location_company, location_home, travelType } = this.data
         // let start_Location = startLocation.split(',').map(json => Number(json))
         let end_location = travelType == '2' ? location_home : location_company
+        let end_address = travelType == '2' ? addr_home : addr_company
         let parmas = {}
         if(type == 'passenger'){
           parmas = Object.assign({}, {token: token}, {start: startLocation}, {end: end_location}, {strategy: 0})
@@ -845,6 +788,9 @@ Page({
               anchor: {x: .5, y: .5}
             }]
           })
+        })
+        this.setData({
+            end_address: end_address
         })
         this.getComputePricelv1(end_location)
       },

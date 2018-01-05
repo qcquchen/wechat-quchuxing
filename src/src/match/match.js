@@ -22,8 +22,8 @@ Page({
         code_type: 'owner',
         orderInfo: {},
         booked_active: 'shun',
-        shunPassengers: {},
-        people_info: {},
+        shunPassengers: [],
+        people_info: [],
         people_id: null,
         attention_status: 0,
         passenger_details: [],
@@ -33,7 +33,8 @@ Page({
         tembleTime_active: false,
         passenger_up_type: false,
         left_text: '>>>',
-        right_text: '<<<'
+        right_text: '<<<',
+        title_details: {}
 	},
 	onLoad(option){
     let self = this
@@ -52,7 +53,6 @@ Page({
           latitude: data[0].latitude,
           longitude: data[0].longitude,
         })
-	       self.setMarkers()
       },
       fail:function(e){
         wx.showToast({
@@ -65,7 +65,7 @@ Page({
     this.initData(option)
 	},
 	initData(option){
-		let { type, id, seat } = option
+		let { type, id, seat, times, travelType } = option
     const { token } = app.globalData.entities.loginInfo
     this.setData({
       match_id: id,
@@ -77,6 +77,7 @@ Page({
 			this.postMatchCompany(id, token)
 		}
     if(type == 'owner'){
+      const { line_loc } = app.globalData.entities
       this.postMatchPeople(id, token, type)
     }
 		if(type == 'details'){
@@ -87,32 +88,24 @@ Page({
          this.getOrderInfo(id)
       }
 		}
+    this.travelDetails(id, travelType)
 	},
-	//设置maker点
-	setMarkers(){
-		const { startLocation } = this.data
-		const location_end = app.globalData.entities
-		let start_Location = startLocation.split(',').map(json => Number(json))
-		this.setData({
-			samll_markers: [{
-        iconPath: '../../images/icon_map_star@3x.png',
-        id: 0,
-        longitude: start_Location[0],
-        latitude: start_Location[1],
-        width: 32,
-        height: 50,
-        anchor: {x: .5, y: .5}
-      },{
-        iconPath: '../../images/icon_map_end@3x.png',
-        id: 1,
-        longitude: location_end[0],
-        latitude: location_end[0],
-        width: 32,
-        height: 50,
-        anchor: {x: .5, y: .5}
-      }]
-		})
-	},
+  travelDetails: function(id, travelType){
+    console.log()
+    const { token } = app.globalData.entities.loginInfo
+    passenger_api.travelDetails({data: {
+      token: token,
+      travelId: id,
+      travelType: travelType
+    }}).then(json => {
+      let data = json.data.details
+      data.time = moment(data.time).toDate().pattern('MM月dd日 HH:mm')
+      this.setData({
+        title_details: data
+      })
+      this.getLine(data.start, data.end)
+    })
+  },
 	//  乘客匹配车主
 	postMatchCompany(id, token){
     let parmas = Object.assign({}, {token: token}, {passengerTravelId: id}, {pageNum: 1})
@@ -284,7 +277,6 @@ Page({
         travel_order: travel_data,
         car_travel_active: moment().isBefore(json.data.travel.tembleTime)
       })
-      this.getLine(travel_data.start, travel_data.end)
       if(passenger_info.length != 0){
         this.getPassengerInfo(null, passenger_info[0].phone)
       }
@@ -292,6 +284,37 @@ Page({
   },
   getLine(start, end){
     const { token } = app.globalData.entities.loginInfo
+    const { title_details } = this.data
+    let parmas = Object.assign({}, { token: token }, { start: start }, { end: end }, { strategy: title_details.strategy ? title_details.strategy : 0 })
+    driver_api.getLine({data: parmas}).then(json => {
+      let data = json.data.routes
+      this.setData({
+        samll_markers: [{
+          iconPath: '../../images/icon_map_star@3x.png',
+          id: 0,
+          longitude: start[0],
+          latitude: start[1],
+          width: 32,
+          height: 50
+        },{
+          iconPath: '../../images/icon_map_end@3x.png',
+          id: 1,
+          longitude: end[0],
+          latitude: end[1],
+          width: 32,
+          height: 50
+        }],
+        polyline: [{
+          points: data.route,
+          color:"#57AD68",
+          width: 10,
+          dottedLine: false,
+          arrowLine: true,
+          borderColor: '#458A53',
+          borderWidth: 1
+        }]
+      })
+    })
   },
   getPassengerInfo:function(e, id){
     let passenger_id = e ? e.currentTarget.dataset.id : id
@@ -376,13 +399,10 @@ Page({
   },
   updateTravel: function(e){
     const { token } = app.globalData.entities.loginInfo
-    const { currentTarget: { dataset: { text } } } = e
     const { travel_order } = this.data
-    let content = text == 'over' ? '确定取消行程吗？':'确定结束行程吗？'
-    let over_content = text == 'over' ? '取消行程':'完成行程'
     wx.showModal({
       title: '提示',
-      content: content,
+      content: '确定结束行程吗？',
       success: function(res) {
         if (res.confirm) {
           driver_api.updateTravel({
@@ -392,7 +412,7 @@ Page({
             }
           }).then(json => {
             wx.showToast({
-              title: over_content,
+              title: '完成行程',
               icon: 'success',
               duration: 2000
             })
@@ -530,7 +550,37 @@ Page({
   },
   // 车主取消行程
   carOverTravel: function(){
-    
+    const { token } = app.globalData.entities.loginInfo
+    const { travel_order } = this.data
+    wx.showModal({
+      title: '提示',
+      content: '确定取消行程吗？',
+      success: function(res) {
+        if (res.confirm) {
+          driver_api.deleteTravel({
+            data: {
+              token: token,
+              travelId: travel_order.travelId
+            }
+          }).then(json => {
+            if(json.data.status == 200){
+              wx.showToast({
+                title: '取消行程',
+                icon: 'success',
+                duration: 2000
+              })
+              setTimeout(() => {
+                wx.reLaunch({
+                  url: `/src/index`
+                })
+              }, 2000)
+            }
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
   },
   callDriverPhone: function(){
     const { orderInfo } = this.data

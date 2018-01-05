@@ -131,11 +131,12 @@ Page({
 	switch_code: function(e){
 		const { token } = app.globalData.entities.loginInfo
 		const { type } = e.currentTarget.dataset
+		const { user_page } = this.data
 		this.setData({
 			code_type: type
 		})
 		if(type == 'stroke'){
-			this.getMineTraval(token)
+			this.getMineTraval(token, user_page)
 		}
 		if(type == 'attention'){
 			this.getAttentionList(token)
@@ -178,14 +179,21 @@ Page({
 	},
 	gotoDetails: function(e){
 		const travelId = e.currentTarget.dataset.travelid
+		const { order_travel } = this.data
+		let find_data = order_travel.find(json => json.travelId == travelId)
+		let parmas = Object.assign({}, {end: find_data.end}, {start: find_data.start})
+		util.setEntities({
+			key: 'line_loc',
+			value: parmas
+		})
 		wx.navigateTo({
-        	url: `/src/match/match?type=owner&id=${travelId}`
+        	url: `/src/match/match?type=owner&id=${travelId}&travelType=1`
       	})
 	},
 	toPayDetails: function(e){
 		const travelId = e.currentTarget.dataset.travelid
 		wx.navigateTo({
-        	url: `/src/match/match?type=details&id=${travelId}`
+        	url: `/src/match/match?type=details&id=${travelId}&travelType=2`
       	})
 	},
 	gotoMatchPay: function(e){
@@ -194,7 +202,7 @@ Page({
 		let seat = order_travel && order_travel.find(json => json.PassengerTravelId == id).seats
 		let startTimeTxt = order_travel && order_travel.find(json => json.PassengerTravelId == id).startTimeTxt
 		wx.navigateTo({
-        	url: `/src/match/match?type=passenger&id=${id}&seat=${seat}&&times=${startTimeTxt}`
+        	url: `/src/match/match?type=passenger&id=${id}&seat=${seat}&&times=${startTimeTxt}&travelType=2`
       	})
 	},
 	gotoPay: function(e){
