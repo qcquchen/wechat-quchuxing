@@ -7,6 +7,7 @@
     "src/setAddress/searchAddress",
     "src/ownersSelectLine/ownersSelectLine",
     "src/homePage/homePage",
+    "src/homePage/deleteTravel",
 
     "src/group/group",
     "src/group/creatGroup",

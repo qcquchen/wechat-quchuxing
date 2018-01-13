@@ -75,36 +75,10 @@
 	<view class="content">
 		<!-- 行程 -->
 		<view wx:for-items="{{ order_travel }}" wx:key="{{ index }}">
-			<block wx:if="{{ item.status == 'NO_MACH' }}">
-				<view class="stroke_list">
-					<view class="list_header">
-						<view class="stroke_title">({{ item.startTimeTxt }})寻找车主中...第一时间通知您</view>
-						<view class="stroke_type" data-id="{{ item.PassengerTravelId }}" bindtap="deleteTraval">
-							<image src="../../images/btn_cancel@3x.png"></image>
-						</view>
-					</view>
-					<view class="list_content" data-id="{{ item.PassengerTravelId }}" bindtap="gotoMatchPay">
-						<view class="list_location">
-							<view class="loc_style_up"></view>
-							<view class="loc_address">{{ item.startAddress }} <text>上车</text></view>
-						</view>
-						<view class="list_location">
-							<view class="loc_style_down"></view>
-							<view class="loc_address">{{ item.endAddress }} <text>下车</text></view>
-						</view>
-						<view class="list_foot">
-							<view class="ride_number">
-								<view class="ride">乘车人数</view>
-								<view class="number">{{ item.seats }}</view>
-							</view>
-						</view>
-					</view>
-				</view>
-			</block>
 			<block wx:if="{{ item.status == 'MACH' }}">
 				<view class="stroke_list">
 					<view class="list_header">
-						<view class="stroke_title">({{ item.startTimeTxt }})有顺路车主，去订座</view>
+						<view class="stroke_title">({{ item.startTimeTxt }}) 查看匹配详情</view>
 						<view class="stroke_type" data-id="{{ item.PassengerTravelId }}" bindtap="deleteTraval">
 							<image src="../../images/btn_cancel@3x.png"></image>
 						</view>
@@ -127,6 +101,33 @@
 					</view>
 				</view>
 			</block>
+		</view>
+		<view wx:for-items="{{ order_travel }}" wx:key="{{ index }}">
+			<block wx:if="{{ item.status == 'PASSENGER_TRAVEL' }}">
+				<view class="stroke_list">
+					<view class="list_header">
+						<view class="stroke_title">{{ item.startTime }}</view>
+					</view>
+					<view class="list_content">
+						<view class="list_location">
+							<view class="loc_style_up"></view>
+							<view class="loc_address">{{ item.startAddress }}</view>
+						</view>
+						<view class="list_location">
+							<view class="loc_style_down"></view>
+							<view class="loc_address">{{ item.endAddress }}</view>
+						</view>
+						<view class="list_foot">
+							<view class="ride_number">
+								<view class="ride">乘车人数</view>
+								<view class="number">{{ item.seats }}</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</block>
+		</view>
+		<view wx:for-items="{{ order_travel }}" wx:key="{{ index }}">
 			<block wx:if="{{ item.status == 'PASSENGER_TRAVELING' }}">
 				<view class="stroke_list">
 					<view class="list_header">
@@ -218,7 +219,7 @@
 			<!-- 车主结束行程 -->
 			<block wx:if="{{ item.status == 'DRIVER_HISTORY_TRAVEL' }}">
 				<view class="over_list">
-					<view class="stroke_list" data-id="{{ item.travelId }}" animation="{{ item.travelId == delete_id ? deleteAnimation : '' }}" bindtouchstart="mytouchstart" bindtouchmove="mytouchmove">
+					<view class="stroke_list" data-type="owners" data-id="{{ item.travelId }}" bindtap="deleteOfpage">
 						<view class="list_header">
 							<view class="stroke_title">{{ item.startTimeTxt }}</view>
 							<view class="stroke_type over">已结束</view>
@@ -255,7 +256,7 @@
 			<!-- 乘客结束行程 -->
 			<block wx:if="{{ item.status == 'PASSENGER_HISTORY_ORDER' }}">
 				<view class="over_list">
-					<view class="stroke_list" data-id="{{ item.travelId }}" animation="{{ item.travelId == delete_id ? deleteAnimation : '' }}"  bindtouchstart="mytouchstart" bindtouchmove="mytouchmove">
+					<view class="stroke_list" data-type="passenger" data-orders_id="{{ item.ordersTravelId }}" data-id="{{ item.travelId }}"  bindtap="deleteOfpage">
 						<view class="list_header">
 							<view class="stroke_title">{{ item.startTimeTxt }}</view>
 							<view class="stroke_type over">已结束</view>
@@ -272,11 +273,11 @@
 							<view class="list_foot">
 								<view class="ride_number">
 									<view class="ride">乘车人数</view>
-									<view class="number">2</view>
+									<view class="number">{{ item.bookSeat }}</view>
 								</view>
 								<view class="payment">
 									<view>实付款:</view>
-									<view>{{ item.travelPrice }}</view>
+									<view>{{ item.price }}</view>
 								</view>
 							</view>
 						</view>

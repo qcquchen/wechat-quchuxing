@@ -24,39 +24,32 @@ Page({
 		startPoint: [0, 0],
 		deleteAnimation: {},
 		deleteAnimation_btn: {},
-		delete_active: true
+		delete_active: true,
+		phone: ''
 	},
 	onShow(){
-		// const { token } = app.globalData.entities.loginInfo
-		// if(!token){
-		// 	wx.showModal({
-		// 	  title: '提示',
-		// 	  content: '您还未登录，请先登录吧~',
-		// 	  success: function(res) {
-		// 	    if (res.confirm) {
-		// 	      	wx.navigateTo({
-		// 		  		url: `/src/login/login`
-		// 			})
-		// 	    } else if (res.cancel) {
-		// 	      console.log('用户点击取消')
-		// 	    }
-		// 	  }
-		// 	})
-		// }
-		// let phone = app.globalData.entities.loginInfo.phone
-		// this.getUserInfo(phone)
-	},
-	onLoad(option){
 		wx.showLoading({
 		  title: '加载中',
 		})
+		this.setData({
+			order_travel: [],
+			user_page: 1
+		})
+		const { phone } = this.data
+		this.getUserInfo(phone)
+	},
+	onLoad(option){
 		const { deviceInfo } = app.globalData.entities
 		this.setData({
 			width: deviceInfo.windowWidth,
 			height: deviceInfo.windowHeight
 		})
 		let phone = option.selfPhone ? option.selfPhone : app.globalData.entities.loginInfo.phone
-		this.getUserInfo(phone)
+		option.selfPhone ? this.setData({
+			phone: option.selfPhone
+		}) : this.setData({
+			phone: app.globalData.entities.loginInfo.phone
+		})
 	},
 	getUserInfo(selfPhone){
 		const { token } = app.globalData.entities.loginInfo
@@ -70,7 +63,7 @@ Page({
 				isSelf: json.data.isSelf,
 				selfPhone: json.data.OtherPhone
 			})
-			this.getMineTraval(token)
+			this.getMineTraval(token, 1)
 			this.getFriendsItinerary(token, selfPhone)
 		})
 	},
@@ -85,7 +78,16 @@ Page({
 				phone: phone
 			}
 		}).then(json => {
-			console.log(json,'-----------------json')
+			let data = json.data.othersTravel
+			let new_array = []
+			data && data.map(json => {
+				new_array.push(json)
+			})
+			this.setData({
+				order_travel: new_array
+			})
+		}).then(() => {
+			wx.hideLoading()
 		})
 	},
 	getMineTraval(token, page){
@@ -150,7 +152,8 @@ Page({
 		}).then(json => {
 			let attention = json.data.beattention
 			this.setData({
-				attention: attention
+				attention: attention,
+				order_travel: []
 			})
 		})
 	},
@@ -171,7 +174,7 @@ Page({
 			  duration: 2000
 			})
 			let delete_index = order_travel.findIndex(json => json.PassengerTravelId == id)
-			order_travel.splice(delete_index,delete_index)
+			order_travel.splice(delete_index, 1)
 			this.setData({
 				order_travel: order_travel
 			})
@@ -193,7 +196,7 @@ Page({
 	toPayDetails: function(e){
 		const travelId = e.currentTarget.dataset.travelid
 		wx.navigateTo({
-        	url: `/src/match/match?type=details&id=${travelId}&travelType=2`
+        	url: `/src/match/match?type=details&id=${travelId}&travelType=1`
       	})
 	},
 	gotoMatchPay: function(e){
@@ -235,6 +238,7 @@ Page({
 	},
 	onShareAppMessage: function (res) {
 		const { selfPhone } = this.data
+		let self = this
 	    return {
 	      title: '我的主页',
 	      path: `/src/homePage/homePage?selfPhone=${selfPhone}`,
@@ -317,91 +321,74 @@ Page({
 		  }
 		})
 	},
-	mytouchstart: function(e){
-		this.setData({
-			startPoint: [e.touches[0].pageX, e.touches[0].pageY]
-		})
-	},
-	mytouchmove: function(e){
-		let curPoint = [e.touches[0].pageX, e.touches[0].pageY]
-		const { currentTarget: { dataset: { id } } } = e
-		let { startPoint } = this.data
-		if(curPoint[0] <= startPoint[0]){
-			if(Math.abs(curPoint[0] - startPoint[0]) >= Math.abs(curPoint[1] - startPoint[1])){
-				let curPointNumber = Math.abs(curPoint[0] - startPoint[0]) - Math.abs(curPoint[1] - startPoint[1])
-				if(curPointNumber > 75){
-					let deleteAnimation = animation
-					let deleteAnimation_btn = animation
-        			deleteAnimation.translateX(-100).step()
-        			deleteAnimation_btn.opacity(1).step()
-        			this.setData({
-        				deleteAnimation: deleteAnimation.export(),
-        				deleteAnimation_btn: deleteAnimation_btn.export(),
-    					delete_active: false,
-    					delete_id: id
-        			})
-				}
-			}
-		}else{
-			if(Math.abs(curPoint[0] - startPoint[0]) >= Math.abs(curPoint[1] - startPoint[1])){
-				let curPointNumber = Math.abs(curPoint[0] - startPoint[0]) - Math.abs(curPoint[1] - startPoint[1])
-				if(curPointNumber > 75){
-					let deleteAnimation = animation
-        			deleteAnimation.translateX(0).step()
-        			this.setData({
-        				deleteAnimation: deleteAnimation.export(),
-    					delete_active: true,
-    					delete_id: id
-        			})
-				}
-			}
-		}
-	},
 	onReachBottom: function(){
 		const { user_page } = this.data
 		const { token } = app.globalData.entities.loginInfo
 		let page = user_page + 1
-		this.getMineTraval(token, page)
 		this.setData({
 			pull_up_loading: true,
 			user_page: page
 		})
+		this.getMineTraval(token)
 	},
-	deleteOverTraveId: function(e){
-		const { currentTarget: { dataset: { id } } } = e
-		const { token } = app.globalData.entities.loginInfo
-		const { user_page } = this.data
-		driver_api.deleteOverTravel({
-			data:{
-				token: token,
-				travelId: id
-			}
-		}).then(json => {
-			if(json.data.status == 200){
-				 wx.showToast({
-				  title: '已删除',
-				  icon: 'success',
-				  duration: 2000
-				})
-				 setTimeout(() => {
-					let deleteAnimation = animation
-        			deleteAnimation.translateX(0).step()
-					this.setData({
-						deleteAnimation: deleteAnimation.export(),
-        				deleteAnimation_btn: {},
-    					delete_active: true,
-					})
-					this.Refresh()
-				 }, 1500)
-			}
+	deleteOfpage: function(e){
+		const { currentTarget: { dataset: { id, orders_id, type } } } = e
+		wx.navigateTo({
+			url: `/src/homePage/deleteTravel?id=${id}&orders_id=${orders_id}&type=${type}`
 		})
 	},
-	Refresh: function(){
-		const { order_travel } = this.data
-		let index = order_travel.findIndex(json => json.travelId == this.data.delete_id)
-		order_travel.splice(index, index)
-		this.setData({
-			order_travel: order_travel
-		})
-	}
+	// 	console.log('执行了吗？？？？？？？？？')
+	// 	this.setData({
+	// 		order_travel: [],
+	// 		user_page: 1
+	// 	})
+	// }
+	// mytouchstart: function(e){
+	// 	this.setData({
+	// 		startPoint: [e.touches[0].pageX, e.touches[0].pageY]
+	// 	})
+	// },
+	// mytouchmove: function(e){
+	// 	let curPoint = [e.touches[0].pageX, e.touches[0].pageY]
+	// 	const { currentTarget: { dataset: { id } } } = e
+	// 	let { startPoint } = this.data
+	// 	if(curPoint[0] <= startPoint[0]){
+	// 		if(Math.abs(curPoint[0] - startPoint[0]) >= Math.abs(curPoint[1] - startPoint[1])){
+	// 			let curPointNumber = Math.abs(curPoint[0] - startPoint[0]) - Math.abs(curPoint[1] - startPoint[1])
+	// 			if(curPointNumber > 75){
+	// 				let deleteAnimation = animation
+	// 				let deleteAnimation_btn = animation
+ //        			deleteAnimation.translateX(-100).step()
+ //        			deleteAnimation_btn.opacity(1).step()
+ //        			this.setData({
+ //        				deleteAnimation: deleteAnimation.export(),
+ //        				deleteAnimation_btn: deleteAnimation_btn.export(),
+ //    					delete_active: false,
+ //    					delete_id: id
+ //        			})
+	// 			}
+	// 		}
+	// 	}else{
+	// 		if(Math.abs(curPoint[0] - startPoint[0]) >= Math.abs(curPoint[1] - startPoint[1])){
+	// 			let curPointNumber = Math.abs(curPoint[0] - startPoint[0]) - Math.abs(curPoint[1] - startPoint[1])
+	// 			if(curPointNumber > 75){
+	// 				let deleteAnimation = animation
+ //        			deleteAnimation.translateX(0).step()
+ //        			this.setData({
+ //        				deleteAnimation: deleteAnimation.export(),
+ //    					delete_active: true,
+ //    					delete_id: id
+ //        			})
+	// 			}
+	// 		}
+	// 	}
+	// },
+	// Refresh: function(){
+	// 	const { order_travel } = this.data
+	// 	let index = order_travel.findIndex(json => json.travelId == this.data.delete_id)
+	// 	order_travel.splice(index, index)
+	// 	this.setData({
+	// 		order_travel: order_travel
+	// 	})
+	// }
 })

@@ -124,9 +124,19 @@ Page({
 	    })
 	},
 	gotoSesameCertification: function(){
-		wx.navigateTo({
-        	url: `/src/ownersCertification/sesameCertification`
-      	})
+		// wx.navigateTo({
+  //       	url: `/src/ownersCertification/sesameCertification`
+  //     	})
+  		wx.showModal({
+		  title: '提示',
+		  content: '开发中...稍安勿躁',
+		  showCancel: false,
+		  success: function(res) {
+		    if (res.confirm) {
+		      console.log('用户点击确定')
+		    }
+		  }
+		})
 	},
 	gotoOwnersCertification: function(){
 		wx.navigateTo({

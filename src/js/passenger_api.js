@@ -44,7 +44,7 @@ export const deletePeopleTravel = (options) => _apiPOST(`${API_ROOT}/orders/refu
 export const clickOnTheTrain = (options) => _apiPOST(`${API_ROOT}/orders/up`, options)
 
 // /orders/Travel 查看好友发布的行程
-export const getFriendsItinerary = (options) => _apiPOST(`${API_ROOT}/orders/Travel`, options)
+export const getFriendsItinerary = (options) => _apiPOST(`${API_ROOT}/travel/othersTravel`, options)
 
 // 乘客完成行程 下车 /orders/down
 export const passengerDown = (options) => _apiPOST(`${API_ROOT}/orders/down`, options)
@@ -54,3 +54,6 @@ export const markedLate = (options) => _apiPOST(`${API_ROOT}/orders/late`, optio
 
 //https://t1.passenger.quchuxing.com.cn/travel/detailv1 行程详情
 export const travelDetails = (options) => _apiPOST(`${API_ROOT}/travel/detailv1`, options)
+
+// /orders/history/delete 乘客删除行程
+export const passengerDeleteTravel = (options) => _apiPOST(`${API_ROOT}/orders/history/delete`, options)

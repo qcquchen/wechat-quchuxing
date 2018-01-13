@@ -468,6 +468,13 @@ swiper{
       >view{
         padding: 12px 0;
       }
+      >button{
+        margin: 0;
+        padding: 0;
+        font-size: 13px;
+        background: #484848;
+        color: #ffffff;
+      }
     }
   }
 }
@@ -706,6 +713,13 @@ swiper{
       background: #484848;
       color: #ffffff;
       font-size: 13px;
+      >button{
+        margin: 0;
+        padding: 0;
+        background: #484848;
+        color: #ffffff;
+        font-size: 13px;
+      }
     }
   }
 }

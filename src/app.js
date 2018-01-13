@@ -37,7 +37,7 @@ var appConfig = {
                 wx.showModal({
                   title: '提示',
                   content: '您拒绝了登录系统，如想正常使用所有功能，请重新授权！',
-                  cancelText: '残忍拒绝',
+                  cancelText: '拒绝',
                   confirmText: '重新授权',
                   success: function(res) {
                     if (res.confirm) {

@@ -25,7 +25,9 @@
 		latitude="{{ latitude }}" 
 		scale="16" 
 		markers="{{ samll_markers }}" 
+		bindregionchange="regionchange"
 		bindcontroltap="controltap" 
+		show-location 
 		bindmarkertap="markertap" 
 		polyline="{{ polyline }}" 
 		controls="{{ controls_samll }}"
@@ -113,7 +115,7 @@
 				<view class="commit_journey">
 					<view class="call_off" bindtap="hideCode">稍后</view>
 					<form bindsubmit="commit_journey" report-submit="true">
-						<button class="affirm" formType="submit">
+						<button class="affirm" formType="submit" disabled="{{ !button_disabled }}">
 							<block wx:if="{{ switch_identity == 'passenger' }}">
 								<view>寻找车主</view>
 							</block>

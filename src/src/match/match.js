@@ -125,6 +125,7 @@ Page({
       })
       this.setData({
         isMatchingTravel: matchTravel.isMatchingTravel,
+        isPost_travel: matchTravel.isFalse,
         match_cars: data
       })
       if(data.length != 0){
@@ -178,6 +179,7 @@ Page({
 		let parmas = Object.assign({}, { token: token }, { role: role }, { travelId: travelId }, { pageNum: 1 })
 	  passenger_api.postMatchPeople({data: parmas}).then(json => {
 	    // 匹配过程处理
+      console.log(json.data.matchTravelPassengers,'---------json.data.matchTravelPassengers')
       const { isMatch, matchTravelPassengers } = json.data.matchTravelPassengers
       if(matchTravelPassengers.length != 0){
         this.setData({
@@ -211,7 +213,20 @@ Page({
     })
   },
 	submitOrder:function(){
-		const { seat, car_id, matchCar, match_id } = this.data
+		const { seat, car_id, matchCar, match_id, isPost_travel } = this.data
+    if(isPost_travel == 1){
+      wx.showModal({
+        title: '提示',
+        content: '座位已满',
+        showCancel: false,
+        success: function(res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+          }
+        }
+      })
+      return
+    }
 		let parmas = Object.assign({}, {passengerTravelId: match_id}, {bookSeats: Number(seat)}, {travelId: car_id}, { price: matchCar.price })
 		util.setEntities({
       key: 'order_info',
@@ -353,9 +368,16 @@ Page({
 
   },
   onShareAppMessage: function (res) {
-    const { options } = this.data
+    const { title_details } = this.data
     const type = res.target.dataset.id
-    let title = type == 'share' ? '趣出行 我的出行时间 ' + options.times : '趣出行'
+    let title = ''
+    if(type === 'share'){
+      title = '趣出行'
+    }else if(type === 'owner_share'){
+      title = '我的行程 ' + title_details.time + ' ' + title_details.startLocation + ' ---> ' + title_details.endLocation
+    }else if(title === 'passenger_share'){
+      title = '我的行程 ' + title_details.time + ' ' + title_details.startLocation + ' ---> ' + title_details.endLocation
+    }
     return {
       title: title,
       path: `/src/index`,
@@ -513,6 +535,11 @@ Page({
               icon: 'success',
               duration: 2000
             })
+            setTimeout(() => {
+              wx.reLaunch({
+                url: `/src/index`
+              })
+            }, 1500)
           })
         } else if (res.cancel) {
           console.log('用户点击取消')

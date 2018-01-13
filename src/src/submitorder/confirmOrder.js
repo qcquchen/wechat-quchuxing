@@ -43,8 +43,8 @@ Page({
 		const { order } = this.data
 		util.toPay(order).then(res => {
 			setTimeout(() => {
-				wx.redirectTo({
-					url: `/src/match/match?type=details`
+				wx.reLaunch({
+					url: `/src/match/match?type=details&id=${order.travelId}&travelType=1`
 				})
 			}, 2000)
 		}, () => {

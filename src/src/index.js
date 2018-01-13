@@ -66,7 +66,7 @@ var four_controls = Object.assign({}, {
 
 var five_controls = Object.assign({}, {
   id: 5,
-  iconPath: '../images/btn_locate@2x.png',
+  iconPath: '../images/btn_locate@3x.png',
   position: {
     left: 15,
     top: 15,
@@ -111,7 +111,7 @@ Page({
         strategy_active: '时间最短',
         strategy: 0,
         now_time: moment().toDate().pattern('yyyy-MM-dd'),
-        now_hour: moment().hour(),
+        now_hour: moment().hour() + 1,
         now_minute: moment().minute(),
         circles: [],
         bindTap_hover: true,
@@ -121,7 +121,8 @@ Page({
         select_location: {
           location: null,
           keywords: null
-        }
+        },
+        button_disabled: true
       },
       onShow(){
         const { strategy } = app.globalData.entities
@@ -230,7 +231,7 @@ Page({
               wx.showModal({
                 title: '提示',
                 content: '您关闭了定位服务，如想正常使用定位功能，请开启定位！',
-                cancelText: '残忍拒绝',
+                cancelText: '拒绝',
                 confirmText: '开启定位',
                 success: function(res) {
                   if (res.confirm) {
@@ -345,10 +346,10 @@ Page({
         })
 
         timeArray[1].map((json, index) => {
-          if(json < 10){
-            timeArray[1][index] = '0' + json + '时'
+          if(json < 9){
+            timeArray[1][index] = '0' + (json + 1) + '时'
           }else{
-            timeArray[1][index] = json+'时'
+            timeArray[1][index] = (json + 1) + '时'
           }
         })
 
@@ -356,10 +357,9 @@ Page({
           if(json == 0){
             timeArray[2][index] = '0'+json+'分'
           }else{
-            timeArray[2][index] = json+'分'
+            timeArray[2][index] = json +'分'
           }
         })
-        let now_hour = moment().hour()
         new_timeArray.splice(0,0,'今天')
         new_timeArray.splice(1,1,'明天')
         new_timeArray.splice(2,2,'后天')
@@ -374,6 +374,9 @@ Page({
         this.passenger()
       },
       commit_journey:function(e){
+        this.setData({
+          button_disabled: false
+        })
         const { timeIndex, timeArray, seat_number_index, select_price_index, location_company, addr_company,  travelType, startLocation, startAddress, addr_home, location_home, switch_identity, select_price, strategy, now_time, now_hour, now_minute } = this.data
         let new_timeArray = []
         const { token } = app.globalData.entities.loginInfo
@@ -382,7 +385,7 @@ Page({
           new_timeArray.push(moment().add(json - 1, 'days').toDate().pattern('yyyy-MM-dd'))
         })
         let new_day = new_timeArray[timeArray[0].findIndex(json => json == timeArray[0][timeIndex[0]])]
-        let new_hour = SELECT_TIME_HOUR[timeArray[1].findIndex(json => json == timeArray[1][timeIndex[1]])]
+        let new_hour = SELECT_TIME_HOUR[timeArray[1].findIndex(json => json == timeArray[1][timeIndex[1]])] + 1
         let new_minute = SELECT_TIME_MINUTE[timeArray[2].findIndex(json => json == timeArray[2][timeIndex[2]])]
         let new_time = new_day + ' ' + new_hour + ':' + new_minute + ':00'
         if(new_hour < 10 && new_minute > 10){
@@ -397,13 +400,17 @@ Page({
         // let start_Location = startLocation.split(',').map(json => Number(json))
         let parmas = {}
         if(moment(now_time).isSame(new_day)){
-          if(new_hour < now_hour){
+          if(new_hour < now_hour - 1){
+            let self = this
             wx.showModal({
               title: '提示',
               content: '出发时间不能小于当前时间',
               showCancel: false,
               success: function(res) {
                 if (res.confirm) {
+                  self.setData({
+                    button_disabled: true
+                  })
                   console.log('用户点击确定')
                 }
               }
@@ -440,6 +447,9 @@ Page({
             })
             wx.navigateTo({
               url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}&&times=${parmas.startTime}&travelType=2`
+            })
+            this.setData({
+              button_disabled: true
             })
             this.hideCode()
           }, 2000)
@@ -483,6 +493,9 @@ Page({
             })
             wx.navigateTo({
               url: `/src/match/match?id=${travelId}&&type=owner&travelType=1`
+            })
+            this.setData({
+              button_disabled: true
             })
             this.hideCode()
           }, 2000)
@@ -531,7 +544,6 @@ Page({
               latitude: markers_location[1],
               width: 1,
               height: 20,
-              anchor: {x: .5, y: .5},
               callout: {
                 content: '查找中...',
                 color: '#ffffff',
@@ -619,8 +631,10 @@ Page({
           this.setData({
             markers: markers_clone,
             markers_location: location,
-            label_text: text != '义和庄乡' ? text + '出发' : '定位中......'
+            label_text: text != '义和庄乡' ? (text + '出发') : '定位中......' 
           })
+        }).then(() => {
+          wx.hideLoading()
         })
       },
       selectGoToLocation: function(){
@@ -776,16 +790,14 @@ Page({
               longitude: startLocation[0],
               latitude: startLocation[1],
               width: 32,
-              height: 50,
-              anchor: {x: .5, y: .5}
+              height: 50
             },{
               iconPath: '../images/icon_map_end@3x.png',
               id: 1,
               longitude: new_pline[0].longitude,
               latitude: new_pline[0].latitude,
               width: 32,
-              height: 50,
-              anchor: {x: .5, y: .5}
+              height: 50
             }]
           })
         })

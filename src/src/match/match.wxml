@@ -89,7 +89,7 @@
 			<block wx:if="{{ !isMatch }}">
 				<view class="search_match">
 					<view class="loading_img">
-						<image animation="{{ rotate_animation }}" src="../../images/icon_seaching@3x.png"></image>
+						<image src="../../images/icon_seaching@3x.gif"></image>
 					</view>
 					<view class="loading_text">小趣仍在寻找…还是去看车主吧</view>
 				</view>
@@ -129,9 +129,6 @@
 			<block wx:if="{{ isMatchingTravel == 1 && match_active == 'car' }}">
 				<view class="match_car">
 					<view class="share_and_phone">
-						<view class="share_match_car">
-							<image src="../../images/btn_share@3x.png"></image>
-						</view>
 						<view class="phone_match_car" bindtap="go_car_phone">
 							<image src="../../images/btn_phone@3x.png"></image>
 						</view>
@@ -163,7 +160,7 @@
 		<block wx:if="{{ !isMatch &&  booked_active == 'shun' }}">
 			<view class="search_match">
 				<view class="loading_img">
-					<image animation="{{ rotate_animation }}" src="../../images/icon_seaching@3x.png"></image>
+					<image src="../../images/icon_seaching@3x.gif"></image>
 				</view>
 				<view class="loading_text">小趣仍在寻找…看看已订座乘客吧</view>
 			</view>
@@ -190,8 +187,8 @@
 				</block>
 				<block wx:else>
 					<view class="booked">
-						<block wx:if="{{ templeTime == '已结束' }}">
-							<view class="title">亲爱的, 行程{{ templeTime }}</view>
+						<block wx:if="{{ templeTime == '已发车' }}">
+							<view class="title">亲爱的, 此行程{{ templeTime }}</view>
 						</block>
 						<block wx:else>
 							<view class="title">亲爱的,{{ templeTime }}出发哦</view>
@@ -202,7 +199,7 @@
 							</view>
 							<block wx:if="{{ passenger_details.length < 4 }}">
 								<view class="booked_list">
-									<button class="share_remaining" bindtap="shareRemaining" open-type="share">
+									<button class="share_remaining" bindtap="shareRemaining" open-type="share" data-id="owner_share">
 										<image src="../../images/img_invite.jpg"></image>
 									</button>
 								</view>
@@ -257,7 +254,9 @@
 					<block wx:else>
 						<view bindtap="updateTravel">完成行程</view>
 					</block>
-					<view>分享</view>
+					<button open-type="share" data-id="owner_share">
+						<view>分享</view>
+					</button>
 				</view>
 			</block>
 		</view>
@@ -343,7 +342,9 @@
 				<block wx:else>
 					<view bindtap="passenger_cancel">取消行程</view>
 				</block>
-				<view>分享</view>
+				<button open-type="share" data-id="passenger_share">
+					<view>分享</view>
+				</button>
 			</view>
 		</view>
 	</view>

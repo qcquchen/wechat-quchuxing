@@ -50,7 +50,7 @@ Page({
         let new_price = 0
         seat.map((json, index) => {
         	if(index == id){
-        		json.type = !json.type
+        		json.type = true
         		new_price = json.number * price
         	}else{
         		json.type = false
