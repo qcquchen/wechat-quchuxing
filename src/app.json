@@ -24,7 +24,9 @@
 
     "src/editInformation/editInformation",
     "src/myPurse/myPurse",
-    "src/myPurse/addAnAccount"
+    "src/myPurse/addAnAccount",
+
+    "src/shareTravelDetails/shareTravelDetails"
   ],
   "window": {
     "navigationBarTextStyle": "black",

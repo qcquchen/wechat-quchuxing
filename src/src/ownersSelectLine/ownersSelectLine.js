@@ -17,9 +17,7 @@ Page({
 	},
 	onLoad(option){
 		let self = this
-        let myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
-        const { end_location } = option
-
+        const { end_location, start_Location } = option
         wx.getSystemInfo({
           success: function(res) {
             self.setData({
@@ -27,25 +25,15 @@ Page({
             })
           }
         })
-
-        myAmapFun.getRegeo({
-          success:function(data){
-            self.setData({
-              startLocation: data[0].regeocodeData.addressComponent.streetNumber.location,
-              latitude: data[0].latitude,
-              longitude: data[0].longitude,
-              endLocation: end_location
-            })
-            self.getLine()
-          },
-          fail:function(e){
-            wx.showToast({
-              title: '获取当前位置失败',
-              icon: 'success',
-              duration: 2000
-            })
-          }
+        let start = start_Location.split(',').map(json => Number(json))
+        let end = end_location.split(',').map(json => Number(json))
+        self.setData({
+          startLocation: start,
+          latitude: start[1],
+          longitude: start[0],
+          endLocation: end
         })
+        self.getLine()
 	},
 	selectLine:function(e){
 		const { currentTarget: { dataset: { id } } } = e
@@ -61,9 +49,7 @@ Page({
 	getLine(){
         const { token } = app.globalData.entities.loginInfo
         const { startLocation, type, endLocation, new_strategy } = this.data
-        let start_Location = startLocation.split(',').map(json => Number(json))
-        let end_Location = endLocation.split(',').map(json => Number(json))
-        let parmas = Object.assign({}, { token: token }, { start: start_Location }, { end: end_Location }, { strategy: Number(type) })
+        let parmas = Object.assign({}, { token: token }, { start: startLocation }, { end: endLocation }, { strategy: Number(type) })
 		driver_api.getLine({data: parmas}).then(json => {
 			let data = json.data.routes
 			if(new_strategy.length == 0){
@@ -84,15 +70,15 @@ Page({
 				markers: [{
 	              iconPath: '../../images/icon_map_star@3x.png',
 	              id: 0,
-	              longitude: start_Location[0],
-	              latitude: start_Location[1],
+	              longitude: startLocation[0],
+	              latitude: startLocation[1],
 	              width: 32,
 	              height: 50
 	            },{
 	              iconPath: '../../images/icon_map_end@3x.png',
 	              id: 1,
-	              longitude: end_Location[0],
-	              latitude: end_Location[1],
+	              longitude: endLocation[0],
+	              latitude: endLocation[1],
 	              width: 32,
 	              height: 50
 	            }],

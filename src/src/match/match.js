@@ -38,29 +38,18 @@ Page({
 	},
 	onLoad(option){
     let self = this
-    const { deviceInfo } = app.globalData.entities
+    const { deviceInfo, locationGao } = app.globalData.entities
 
     this.setData({
       video_width: deviceInfo.windowWidth,
       video_height: deviceInfo.windowHeight
     })
 
-    myAmapFun.getRegeo({
-      success:function(data){
-        self.setData({
-          startAddress: data[0].regeocodeData.formatted_address,
-          startLocation: data[0].regeocodeData.addressComponent.streetNumber.location,
-          latitude: data[0].latitude,
-          longitude: data[0].longitude,
-        })
-      },
-      fail:function(e){
-        wx.showToast({
-          title: '获取当前位置失败',
-          icon: 'success',
-          duration: 2000
-        })
-      }
+    self.setData({
+      startAddress: locationGao.address,
+      startLocation: locationGao.startLocation,
+      latitude: locationGao.latitude,
+      longitude: locationGao.longitude,
     })
     this.initData(option)
 	},
@@ -179,7 +168,6 @@ Page({
 		let parmas = Object.assign({}, { token: token }, { role: role }, { travelId: travelId }, { pageNum: 1 })
 	  passenger_api.postMatchPeople({data: parmas}).then(json => {
 	    // 匹配过程处理
-      console.log(json.data.matchTravelPassengers,'---------json.data.matchTravelPassengers')
       const { isMatch, matchTravelPassengers } = json.data.matchTravelPassengers
       if(matchTravelPassengers.length != 0){
         this.setData({
@@ -232,7 +220,7 @@ Page({
       key: 'order_info',
       value: parmas
     })
-    wx.navigateTo({
+    wx.redirectTo({
       url: `/src/submitorder/submitorder`
     })
 	}, 
@@ -290,7 +278,7 @@ Page({
         passenger_details: passenger_info,
         templeTime: json.data.travel.startTime,
         travel_order: travel_data,
-        car_travel_active: moment().isBefore(json.data.travel.tembleTime)
+        car_travel_active: moment().isBefore(moment(json.data.travel.tembleTime).add(30, 'm'))
       })
       if(passenger_info.length != 0){
         this.getPassengerInfo(null, passenger_info[0].phone)

@@ -77,7 +77,7 @@ Page({
 		  content: '确认删除此行程吗？',
 		  success: function(res) {
 		    if (res.confirm) {
-		  		driver_api.deleteOverTravel({
+		  		passenger_api.passengerDeleteTravel({
 					data:{
 						token: token,
 						ordersTravelId: orders_id

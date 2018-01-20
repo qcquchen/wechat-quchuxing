@@ -21,8 +21,8 @@
 </view>
 <view hidden="{{ homeOfwork }}" style="width: {{ video_width }}px; height:{{ video_height - 200 }}px;" >	
 	<map id="map_small" 
-		longitude="{{ longitude }}" 
-		latitude="{{ latitude }}" 
+		longitude="{{ loc_active ? markers_location[0] : longitude}}" 
+		latitude="{{ loc_active ? markers_location[1] : latitude }}" 
 		scale="16" 
 		markers="{{ samll_markers }}" 
 		bindregionchange="regionchange"

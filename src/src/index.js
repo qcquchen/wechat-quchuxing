@@ -5,12 +5,8 @@ import { appLaunchCheck } from '../js/utils'
 import moment from '../js/moment'
 import * as constants from '../js/constants'
 import { SELECT_TIME_DAY, SELECT_TIME_HOUR, SELECT_TIME_MINUTE } from '../js/constants'
-import * as amapFile from '../js/amap-wx'
 
 var app = getApp()
-
-var myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
-
 var animation = wx.createAnimation({
   duration: 900,
   timingFunction: 'ease'
@@ -117,12 +113,13 @@ Page({
         bindTap_hover: true,
         addr_company: null,
         addr_home: null,
-        label_text: '定位中......',
+        label_text: '定位中...',
         select_location: {
           location: null,
           keywords: null
         },
-        button_disabled: true
+        button_disabled: true,
+        loc_active: false
       },
       onShow(){
         const { strategy } = app.globalData.entities
@@ -149,18 +146,17 @@ Page({
           strategy: strategy ? strategy : 0,
           bindTap_hover: true
         })
-        if(openId){
-          this.initData(token)
-        }else{
-          this.setTimeoutInitData(this.initData)
+        if(!strategy){
+          if(openId){
+            this.initData(token)
+          }else{
+            this.setTimeoutInitData(this.initData)
+          }
         }
         
         this.getSearchAddressCallBack()
       },
       onLoad(option){
-        wx.showLoading({
-          title: '加载中',
-        })
         const { openId, token } = app.globalData.entities.loginInfo
         const { location, keywords } = option
         if(option.location){
@@ -178,9 +174,9 @@ Page({
         }
       },
       setTimeoutInitData(callback){
-        let getToken =  setInterval(() => {
+        let getToken = setInterval(() => {
           const { token, openId } = app.globalData.entities.loginInfo
-          if(openId){
+          if(openId && app.globalData.entities.locationGao){
             callback(token)
             clearInterval(getToken)
           }
@@ -199,6 +195,9 @@ Page({
         })
       },
       initData(token){
+        wx.showLoading({
+          title: '加载中',
+        })
         let self = this
         const { select_location } = this.data
         const { deviceInfo } = app.globalData.entities
@@ -207,7 +206,6 @@ Page({
         two_controls.position.left = deviceInfo.windowWidth - 65
         two_controls.position.top = deviceInfo.windowHeight - ( 141 + 65 )
         three_controls.position.left = deviceInfo.windowWidth - 65
-        // four_controls.position.left = deviceInfo.windowWidth - 65
         five_controls.position.top = deviceInfo.windowHeight - ( 141 + 65 )
         self.setData({
           video_width: deviceInfo.windowWidth,
@@ -216,46 +214,15 @@ Page({
         })
         self.getSearchAddressCallBack(token)
         if(select_location.location == null){
-          myAmapFun.getRegeo({
-            success:function(data){
-              self.setData({
-                startAddress: data[0].name,
-                startLocation: [data[0].longitude, data[0].latitude],
-                latitude: data[0].latitude,
-                longitude: data[0].longitude,
-                search_location: [data[0].longitude, data[0].latitude]
-              })
-              self.postNearbyOfPeople(data[0].longitude, data[0].latitude, data[0].name)
-            },
-            fail:function(e){
-              wx.showModal({
-                title: '提示',
-                content: '您关闭了定位服务，如想正常使用定位功能，请开启定位！',
-                cancelText: '拒绝',
-                confirmText: '开启定位',
-                success: function(res) {
-                  if (res.confirm) {
-                    if (wx.openSetting) {
-                      wx.openSetting({
-                        success: (res) => {
-                          if (res.authSetting['scope.userLocation']) {
-                            self.initData(token)
-                          }
-                        }
-                      })
-                    } else {
-                      wx.showModal({
-                        title: '提示',
-                        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
-                      })
-                    }
-                  } else if (res.cancel) {
-                    console.log('用户点击取消')
-                  }
-                }
-              })
-            }
-          })
+            let loc = app.globalData.entities.locationGao
+            self.setData({
+              startAddress: loc.address,
+              startLocation: loc.startLocation,
+              latitude: loc.latitude,
+              longitude: loc.longitude,
+              search_location: loc.search_location
+            })
+            self.postNearbyOfPeople(loc.longitude, loc.latitude, loc.address)
         }
       },
       getSearchAddressCallBack:function(token){
@@ -291,7 +258,8 @@ Page({
           return
         }
         this.setData({
-          bindTap_hover: false
+          bindTap_hover: false,
+          loc_active: true
         })
         this.getSearchAddress(type, id)
       },
@@ -445,11 +413,11 @@ Page({
               key: 'location',
               value: travelType == '2' ? location_home : location_company
             })
-            wx.navigateTo({
-              url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}&&times=${parmas.startTime}&travelType=2`
-            })
             this.setData({
               button_disabled: true
+            })
+            wx.navigateTo({
+              url: `/src/match/match?id=${passengerTravelId}&&type=passenger&&seat=${parmas.seats}&&times=${parmas.startTime}&travelType=2`
             })
             this.hideCode()
           }, 2000)
@@ -463,6 +431,7 @@ Page({
       },
       postJounreyCar(parmas){
         const { travelType, location_company, location_home } = this.data
+        let self = this
         driver_api.postCompanyJonrey({data: parmas}).then(json => {
           // 车主发布行程
           if(json.data.status == -5){
@@ -472,6 +441,9 @@ Page({
               showCancel: false,
               success: function(res) {
                 if (res.confirm) {
+                  self.setData({
+                    button_disabled: true
+                  })
                   wx.navigateTo({
                     url: `/src/ownersCertification/ownersCertification`
                   })
@@ -491,11 +463,11 @@ Page({
               key: 'location',
               value: travelType == '2' ? location_home : location_company
             })
-            wx.navigateTo({
-              url: `/src/match/match?id=${travelId}&&type=owner&travelType=1`
-            })
             this.setData({
               button_disabled: true
+            })
+            wx.navigateTo({
+              url: `/src/match/match?id=${travelId}&&type=owner&travelType=1`
             })
             this.hideCode()
           }, 2000)
@@ -524,6 +496,7 @@ Page({
           timeArray: [SELECT_TIME_DAY, SELECT_TIME_HOUR, SELECT_TIME_MINUTE],
           isMatchingTravel: 0,
           isMatch: false,
+          loc_active: false
         })
       },
       hideSelectHomeOfWork(){
@@ -567,10 +540,7 @@ Page({
                 driver_api.getLocationText({
                   data: parmas
                 }).then(json => {
-                    let data = json.data.regeocode.addressComponent
-                    let township = data.township
-                    let streetNumber = data.streetNumber
-                    let address = township + ' ' + streetNumber.street + streetNumber.number
+                    let address = json.data.regeocode.formatted_address.replace((json.data.regeocode.addressComponent.province + json.data.regeocode.addressComponent.district),"")
                     self.postNearbyOfPeople(Number(location[0].toFixed(6)), Number(location[1].toFixed(6)), address)
                 })
             },
@@ -619,7 +589,7 @@ Page({
               borderRadius: 12
             },
             label: {
-              content: text != '义和庄乡' ? text : '定位中......',
+              content: text != '义和庄乡' ? text : '定位中...',
               color: '#4598F7',
               fontSize: 13,
               display: 'ALWAYS',
@@ -631,7 +601,8 @@ Page({
           this.setData({
             markers: markers_clone,
             markers_location: location,
-            label_text: text != '义和庄乡' ? (text + '出发') : '定位中......' 
+            label_text: text != '义和庄乡' ? (text + ' 出发') : '定位中...',
+            startAddress: text
           })
         }).then(() => {
           wx.hideLoading()
@@ -725,17 +696,17 @@ Page({
         })
       },
       selectLine:function(){
-        const { location_company, location_home, travelType } = this.data
+        const { location_company, location_home, travelType, markers_location } = this.data
         switch (Number(travelType))
         {
           case 2:
             wx.navigateTo({
-              url: `/src/ownersSelectLine/ownersSelectLine?end_location=${location_home}`
+              url: `/src/ownersSelectLine/ownersSelectLine?end_location=${location_home}&start_Location=${markers_location}`
             })
             break;
           case 1:
             wx.navigateTo({
-              url: `/src/ownersSelectLine/ownersSelectLine?end_location=${location_company}`
+              url: `/src/ownersSelectLine/ownersSelectLine?end_location=${location_company}&start_Location=${markers_location}`
             })
             break;
         }
@@ -764,15 +735,15 @@ Page({
       },
       getLine:function(type){
         const { token } = app.globalData.entities.loginInfo
-        const { addr_home, addr_company, startLocation, location_company, location_home, travelType } = this.data
+        const { addr_home, addr_company, markers_location, location_company, location_home, travelType } = this.data
         // let start_Location = startLocation.split(',').map(json => Number(json))
         let end_location = travelType == '2' ? location_home : location_company
         let end_address = travelType == '2' ? addr_home : addr_company
         let parmas = {}
         if(type == 'passenger'){
-          parmas = Object.assign({}, {token: token}, {start: startLocation}, {end: end_location}, {strategy: 0})
+          parmas = Object.assign({}, {token: token}, {start: markers_location}, {end: end_location}, {strategy: 0})
         }else if(type == 'Owners'){
-          parmas = Object.assign({}, {token: token}, {start: startLocation}, {end: end_location}, {strategy: 0})
+          parmas = Object.assign({}, {token: token}, {start: markers_location}, {end: end_location}, {strategy: 0})
         }
 
         driver_api.getLine({
@@ -787,8 +758,8 @@ Page({
             samll_markers: [{
               iconPath: '../images/icon_map_star@3x.png',
               id: 0,
-              longitude: startLocation[0],
-              latitude: startLocation[1],
+              longitude: markers_location[0],
+              latitude: markers_location[1],
               width: 32,
               height: 50
             },{

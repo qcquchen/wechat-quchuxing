@@ -133,12 +133,16 @@ Page({
 	switch_code: function(e){
 		const { token } = app.globalData.entities.loginInfo
 		const { type } = e.currentTarget.dataset
-		const { user_page } = this.data
+		const { isSelf, selfPhone } = this.data
 		this.setData({
 			code_type: type
 		})
 		if(type == 'stroke'){
-			this.getMineTraval(token, user_page)
+			if(isSelf == 1){
+				this.getMineTraval(token, 1)
+			}else{
+				this.getFriendsItinerary(token, selfPhone)
+			}
 		}
 		if(type == 'attention'){
 			this.getAttentionList(token)

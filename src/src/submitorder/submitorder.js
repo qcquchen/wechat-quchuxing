@@ -103,7 +103,7 @@ Page({
 		      key: 'setTimeNumber',
 		      value: 180
 		    })
-			wx.navigateTo({
+			wx.redirectTo({
 				url: `/src/submitorder/confirmOrder?price=${price}`
 			})
 		})

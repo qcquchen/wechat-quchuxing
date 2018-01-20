@@ -1,6 +1,6 @@
 <!-- <view style="height: 50px; width: 100%; background: red;" >滑动我</view> -->
 
-<view style="padding: 15px; border-bottom: 5px solid #F7F6F6;">
+<view style="padding: 15px; border-bottom: 5px solid #F7F6F6;background: #ffffff;">
 	<view class="header">
 		<view class="header_left">
 			<image src="{{ userInfo.picture }}"></image>

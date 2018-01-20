@@ -8,7 +8,11 @@ const requestType = (type, url, options = {}) => {
   options.url                    = url
   options.header                 = options.header || {}
   options.header['X-source']     = 'wechat'
-  options.header['Content-Type'] = 'application/json;charset=utf-8'
+  if(!options.header.post_type){
+    options.header['Content-Type'] = 'application/json;charset=utf-8;'
+  }else{
+    options.header['Content-Type'] = 'application/x-www-form-urlencoded;'
+  }
 
   function callAPI (resolve, reject) {
     const params = Object.assign({}, options, {

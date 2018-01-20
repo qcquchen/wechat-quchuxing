@@ -7,7 +7,8 @@ var app = getApp()
 
 Page({
 	data: {
-
+		one_img: '',
+		two_img: ''
 	},
 	onLoad(){
 
@@ -27,13 +28,19 @@ Page({
 			car_color: e.detail.value
 		})
 	},
+	getName: function(e){
+		this.setData({
+			car_name: e.detail.value
+		})
+	},
 	getDriverLicense: function () {  
 		let self = this
 	    wx.chooseImage({
 		  success: function(res) {
 		    var tempFilePaths = res.tempFilePaths
 		    self.setData({
-		    	driver_licence: tempFilePaths
+		    	driver_licence: tempFilePaths,
+		    	one_img: tempFilePaths ? tempFilePaths[0] : '',
 		    })
 		  }
 		}) 
@@ -46,9 +53,6 @@ Page({
 	      name: 'driverLicencePictureMain',
 	      header: {
 	      	'content-type': 'multipart/form-data'
-	      },
-	      success: function(res){
-	       
 	      }
 	    })
 	},
@@ -58,32 +62,44 @@ Page({
 		  success: function(res) {
 		    var tempFilePaths = res.tempFilePaths
 		    self.setData({
-		    	driving_licence: tempFilePaths
+		    	driving_licence: tempFilePaths,
+		    	two_img: tempFilePaths ? tempFilePaths[0] : '',
 		    })
 		  }
 		}) 
 	},
 	submitDrivingLicense: function(){
 		const { driver_licence } = this.data
+		let self = this
 	    wx.uploadFile({
 	      url: 'https://v1.driver.quchuxing.com.cn/driver/upload/audit_weapp', 
 	      filePath: driver_licence ? driver_licence[0] : '',
 	      name: 'drivingLicensePictureMain',
 	      header: {
 	      	'content-type': 'multipart/form-data'
-	      },
-	      success: function(res){
-	       
 	      }
 	    })
 	},
 	submit: function(){
-		const { car_code, car_model, car_color, DriverLicense, DrivingLicense } = this.data
+		const { car_code, car_model, car_color, car_name } = this.data
         const { token } = app.globalData.entities.loginInfo
+        if(!car_name){
+	        wx.showModal({
+	          title: '提示',
+	          content: '请输入真实姓名',
+	          showCancel: false,
+	          success: function(res) {
+	            if (res.confirm) {
+	              console.log('')
+	            }
+	          }
+	        })
+	        return
+	    }
         if(!car_code){
 	        wx.showModal({
 	          title: '提示',
-	          content: '请输出车牌号',
+	          content: '请输入车牌号',
 	          showCancel: false,
 	          success: function(res) {
 	            if (res.confirm) {
@@ -106,10 +122,15 @@ Page({
 	        })
 	        return
 	    }
-        let parmas = Object.assign({}, {token: token}, {drivingLicensePictureMain: DrivingLicense}, {driverLicencePictureMain: DriverLicense}, {carNumber: car_code}, {car: car_model + car_color}, {carMaster: '屈晨'})
-		driver_api.postCarInfo({data: parmas}).then(json => {
+        let parmas = Object.assign({}, {token: token}, {carNumber: car_code}, {car: car_model + car_color}, {carMaster: car_name})
+		driver_api.postCarInfo({
+			data: parmas,
+			header : {
+		        'post_type': true
+		    }
+		}).then(json => {
 			let data = json.data
-			// if(data.status == -2){
+			if(data.status == 200){
 				this.submitDrivingLicense()
 				this.submitDriverLicense()
 				wx.showToast({
@@ -122,7 +143,7 @@ Page({
 					  delta: 2
 					})
 				}, 2000)
-			// }
+			}
 		})
 	}
 })

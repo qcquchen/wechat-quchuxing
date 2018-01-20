@@ -72,7 +72,7 @@ export const getGroupDetails = (options) => _apiPOST(`${API_ROOT}/driver/group/d
 export const getMeetingGroupDetails = (options) => _apiPOST(`${API_ROOT}/driver/group/detailGrouph`, options)
 
 // /driver/upload/audit_weapp 车主认证
-export const postCarInfo = (options) => _apiPOST(`${API_ROOT}/driver/upload/audit_weapp`, options)
+export const postCarInfo = (options) => _apiPOST(`${API_ROOT}/driver/upload/audit`, options)
 
 // travel/detaillv2 车主查看已订座乘客
 export const getBookedPeople = (options) => _apiPOST(`${API_ROOT}/travel/detaillv2`, options)
