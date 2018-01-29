@@ -43,6 +43,8 @@ export const postCompanyJonrey = (options) => _apiPOST(`${API_ROOT}/travel/creat
 
 // 路径规划 /travel/pathPlanning
 export const getLine = (options) => _apiPOST(`${API_ROOT}/travel/pathPlanning`, options)
+// 不穿token的线路规划
+export const getLineV1 = (options) => _apiPOST(`${API_ROOT}/travel/pathPlanninglv1`, options)
 
 // 个人主页
 export const getUserInfo = (options) => _apiPOST(`${API_ROOT}/driver/personalInfo`, options)
@@ -109,3 +111,14 @@ export const deleteTravel = (options) => _apiPOST(`${API_ROOT}/travel/cancel`, o
 
 // 删除已完成行程 /travel/history/delete
 export const deleteOverTravel = (options) => _apiPOST(`${API_ROOT}/travel/history/delete`, options)
+// 分享行程详情
+export const shareTravelDetails = (options) => _apiPOST(`${API_ROOT}/travel/shareTravelDetail`, options)
+
+// 点赞 /feed/travelLike
+export const postLike = (options) => _apiPOST(`${API_ROOT}/feed/travelLike`, options)
+
+// 取消点赞 /feed/travelUnlike
+export const deleteLike = (options) => _apiPOST(`${API_ROOT}/feed/travelUnlike`, options)
+
+// 行程分享 /feed/travelShare
+export const shareTravel = (options) => _apiPOST(`${API_ROOT}/feed/travelShare`, options)

@@ -99,7 +99,10 @@ Page({
 		        key: 'loginInfo',
 		        value: json.data
 		    })
-
+			util.setStorage({
+	            key : 'first_userInfo',
+	            data : json.data
+	        })
 		    wx.showToast({
 			  title: '登录成功',
 			  icon: 'success',

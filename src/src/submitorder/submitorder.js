@@ -29,19 +29,23 @@ Page({
 		const {order_info} = app.globalData.entities
 		const { seat }= this.data
 		seat.map((json, index) => {
-        	if(index == order_info.bookSeats - 1){
-        		json.type = !json.type
-        	}else{
-        		json.type = false
-        	}
-        })
+    	if(index == order_info.bookSeats - 1){
+    		json.type = !json.type
+    	}else{
+    		json.type = false
+    	}
+    })
+		if(order_info.bookSeats - 1 < 0){
+			seat[0].type = true
+		}
 		this.setData({
 			price: order_info.price,
 			mine_seat: order_info.bookSeats,
 			travelId: order_info.travelId,
 			submit_price: order_info.price * order_info.bookSeats + 1,
 			people_id: order_info.passengerTravelId,
-			seat: seat
+			seat: seat,
+			sharePhone: order_info.phone
 		})
 	},
 	selectSeat:function(e){
@@ -70,7 +74,7 @@ Page({
 	    })
 	},
 	submit:function(){
-		const { submit_price, travelId, seat, price, insurance, people_id } = this.data
+		const { submit_price, travelId, seat, price, insurance, people_id, sharePhone } = this.data
 		let mine_seat = seat.find(json => json.type == true).number
 		const { token, openId } = app.globalData.entities.loginInfo
 		passenger_api.postPay({
@@ -81,7 +85,7 @@ Page({
 				isWX: true,
 				openid: openId,
 				travelId: travelId,
-				passengerTravelId: people_id
+				sharerPhone: sharePhone
 			}
 		}).then(json => {
 			let data = json.data

@@ -1,42 +1,41 @@
-<map id="map" 
-	longitude="113.324520" 
-	latitude="23.099994" 
-	scale="14" 
-	controls="{{controls}}" 
-	bindcontroltap="controltap" 
-	markers="{{markers}}" 
-	bindmarkertap="markertap" 
-	polyline="{{polyline}}" 
-	bindregionchange="regionchange" 
-	show-location 
+<map id="map"
+	longitude="{{ longitude }}"
+	latitude="{{ latitude }}"
+	scale="16"
+	controls="{{controls}}"
+	bindcontroltap="controltap"
+	markers="{{markers}}"
+	bindmarkertap="markertap"
+	polyline="{{polyline}}"
+	show-location
 	style="width: 100%; height: 240px;"></map>
 
 <view class="body">
 	<view class="body_header">
 		<view class="travel_title">
-			<view class="travel_time">11月12日22:30</view>
+			<view class="travel_time">{{ travel.startTimeTxt }}</view>
 			<view class="check_then_trip">查看更多行程 ></view>
 		</view>
 		<view class="travel_address">
-			<view class="start_addr">金台路</view>
+			<view class="start_addr">{{ travel.startAddress }}</view>
 			<view class="address_icon">
 				<image src="../../images/icon_arrow_share@3x.png"></image>
 			</view>
-			<view class="end_addr">中关村创业大厦</view>
+			<view class="end_addr">{{ travel.endAddress }}</view>
 		</view>
 	</view>
 	<view class="body_container">
 		<view class="content_title">
 			<view class="owner_img">
-				<image src="../../images/img_me.jpg"></image>
+				<image src="{{ travel.driverPicture }}"></image>
 			</view>
 			<view class="owner_right">
 				<view class="owner_info">
-					<view class="name">吴亦凡</view>
+					<view class="name">{{ travel.nickname }}</view>
 					<view class="sex">
 						<image src="../../images/img_men@3x.png"></image>
 					</view>
-					<view class="owner_carCode">奥迪</view>
+					<view class="owner_carCode">{{ travel.car }}</view>
 				</view>
 				<view class="speak_prompt">
 					<image src="../../images/img_pop@3x.png"></image>
@@ -46,50 +45,19 @@
 		</view>
 		<view class="content_head">
 			<view class="passersby_like">
-				<image src="../../images/btn_like@3x.png"></image>
-				<view class="ok_like">四人已点赞</view>
+				<block wx:if="{{ share_info.isLiked }}">
+					<image src="../../images/btn_liked@3x.png"></image>
+				</block>
+				<block wx:else>
+					<image bindtap="postLike" src="../../images/btn_like@3x.png"></image>
+				</block>
+				<view class="ok_like">{{ awardFriends.length }}人已点赞</view>
 				<view class="like_list_title">点赞的好友</view>
 			</view>
 			<view class="like_list">
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
-				</view>
-				<view class="like_list_li">
-					<image src="../../images/img_me.jpg"></image>
-					<view class="like_price">￥1.20</view>
+				<view class="like_list_li" wx:for-items="{{ awardFriends }}" wx:key="{{ index }}">
+					<image src="{{ item.picture }}"></image>
+					<view class="like_price">￥{{ item.billMoney }}</view>
 				</view>
 			</view>
 		</view>
@@ -97,10 +65,10 @@
 	<view class="body_foot">
 		<view class="foot_title">王X强 分享10个行程 赚20元</view>
 		<view class="foot_input">
-			<view class="input_phone">
+			<!-- <view class="input_phone">
 				<input placeholder="输入领奖手机号" />
-			</view>
-			<button class="foot_btn">
+			</view> -->
+			<button class="foot_btn" open-type="{{ login_active ? 'share' : ''}}" bindtap="isLogin">
 				<view>分享抢红包</view>
 			</button>
 		</view>
@@ -112,9 +80,18 @@
 	</view>
 </view>
 <view class="submit">
-	<view class="travel_info">
-		<view>2人乘车</view>
-		<view>车费10.00元</view>
-	</view>
-	<view class="submit_btn">抢单</view>
+	<block wx:if="{{ options.travelType == 0 }}">
+		<view class="travel_info">
+			<view>余座{{ travel.surplusSeats }}</view>
+			<view>车费{{ travel.travelPrice }}元</view>
+		</view>
+		<view class="submit_btn" bindtap="submit">订座</view>
+	</block>
+	<block wx:if="{{ options.travelType == 1 }}">
+		<view class="travel_info">
+			<view>{{ travel.surplusSeats }}人乘车</view>
+			<view>车费{{ travel.travelPrice }}元</view>
+		</view>
+		<view class="submit_btn" bindtap="grabAsingLe">抢单</view>
+	</block>
 </view>

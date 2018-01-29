@@ -44,13 +44,6 @@ Page({
       video_width: deviceInfo.windowWidth,
       video_height: deviceInfo.windowHeight
     })
-
-    self.setData({
-      startAddress: locationGao.address,
-      startLocation: locationGao.startLocation,
-      latitude: locationGao.latitude,
-      longitude: locationGao.longitude,
-    })
     this.initData(option)
 	},
 	initData(option){
@@ -90,7 +83,11 @@ Page({
       let data = json.data.details
       data.time = moment(data.time).toDate().pattern('MM月dd日 HH:mm')
       this.setData({
-        title_details: data
+        title_details: data,
+        latitude: data.start[1],
+        longitude: data.start[0],
+        startAddress: data.startLocation,
+        startLocation: data.start
       })
       this.getLine(data.start, data.end)
     })

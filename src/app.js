@@ -8,7 +8,18 @@ import * as amapFile from './js/amap-wx'
 var myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
 
 var appConfig = {
-    onLaunch: function () {
+    onLaunch: function (ops) {
+      // 获取微信群ID
+      if(ops.scene == 1044){
+        wx.getShareInfo({
+            shareTicket: res.shareTickets[0],
+            success(res) {
+              console.log(res.encryptedData)
+              console.log(res.iv)
+              // 后台解密，获取 openGId
+            }
+        })
+      }
       this.getWechatInfo().then(res => {
         // this.initCallBack()
       })
