@@ -14,6 +14,7 @@ Page({
 	onLoad(option){
 		let pay_datails = wx.getStorageSync('pay_datails')
 		const { price } = option
+		console.log(pay_datails,'---------------pay_datails')
 		this.setData({
 			order: pay_datails,
 			price: price
@@ -23,7 +24,7 @@ Page({
 	setIntervalTime:function(){
 		let second = app.globalData.entities.setTimeNumber || 180
 		let time = setInterval(() => {
-			second = second - 1 
+			second = second - 1
 			this.setData({
 				countdown: second
 			})

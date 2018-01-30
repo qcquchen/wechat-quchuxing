@@ -23,7 +23,7 @@ Page({
 		}],
 		price: 0,
 		submit_price: 0,
-		insurance: true
+		insurance: false
 	},
 	onLoad(){
 		const {order_info} = app.globalData.entities
@@ -42,10 +42,10 @@ Page({
 			price: order_info.price,
 			mine_seat: order_info.bookSeats,
 			travelId: order_info.travelId,
-			submit_price: order_info.price * order_info.bookSeats + 1,
+			submit_price: order_info.price * order_info.bookSeats,
 			people_id: order_info.passengerTravelId,
 			seat: seat,
-			sharePhone: order_info.phone
+			sharePhone: order_info.sharePhone
 		})
 	},
 	selectSeat:function(e){
@@ -93,11 +93,16 @@ Page({
 				wx.showModal({
 				  title: '提示',
 				  content: SUBMIT_WXPAY[data.status],
-				  showCancel: false,
+				  showCancel: data.status == -1 ? true : false,
+					confirmText: data.status == -1 ? '去登录' : '确定',
 				  success: function(res) {
-				    if (res.confirm) {
-				      console.log('用户点击确定')
-				    }
+				    if (res.confirm && data.status == -1) {
+							wx.navigateTo({
+				        url: `/src/login/login`
+				      })
+				    }else{
+							console.log('用户点击确定')
+						}
 				  }
 				})
 				return

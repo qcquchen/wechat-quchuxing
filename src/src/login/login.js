@@ -17,7 +17,7 @@ Page({
 		code_type: 'no'
 	},
 	inPhone:function(e){
-		if(!(/^1[3|4|5|8|7][0-9]\d{4,8}$/.test(e.detail.value))){ 
+		if(!(/^1[3|4|5|8|7][0-9]\d{4,8}$/.test(e.detail.value))){
 			this.setData({
 				phone_false: true
 			})
@@ -30,7 +30,7 @@ Page({
     	}
 	},
 	inCode:function(e){
-		// if(!(/^\d{6}$/.test(e.detail.value))){      
+		// if(!(/^\d{6}$/.test(e.detail.value))){
 		// 	this.setData({
 		// 		code_false: true
 		// 	})
@@ -86,28 +86,31 @@ Page({
 			})
 		})
 	},
-	submit_login(){ 
+	submit_login(){
 		const { phone, code } = this.data
 		const { openId } = app.globalData.entities.loginInfo
 		let parmas = Object.assign({}, { phone: phone.value }, { captcha: code.value }, { openId: openId })
 		driver_api.postLogin({data: parmas}).then(json => {
-			wx.navigateBack({
-			  delta: 1
-			})
+
 			json.data.openId = openId
 			util.setEntities({
 		        key: 'loginInfo',
 		        value: json.data
 		    })
 			util.setStorage({
-	            key : 'first_userInfo',
-	            data : json.data
-	        })
-		    wx.showToast({
+          key : 'first_userInfo',
+          data : json.data
+      })
+	    wx.showToast({
 			  title: '登录成功',
 			  icon: 'success',
 			  duration: 2000
 			})
+			setTimeout(() => {
+				wx.navigateBack({
+					delta: 1
+				})
+			}, 2000)
 		}, e => {
 			 wx.showToast({
 			  title: '登录失败',

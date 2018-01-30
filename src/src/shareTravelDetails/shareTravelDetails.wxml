@@ -1,7 +1,7 @@
 <map id="map"
 	longitude="{{ longitude }}"
 	latitude="{{ latitude }}"
-	scale="16"
+	scale="{{ scale }}"
 	controls="{{controls}}"
 	bindcontroltap="controltap"
 	markers="{{markers}}"
@@ -26,9 +26,16 @@
 	</view>
 	<view class="body_container">
 		<view class="content_title">
-			<view class="owner_img">
-				<image src="{{ travel.driverPicture }}"></image>
-			</view>
+			<block wx:if="{{ options.travelType == 0 }}">
+				<view class="owner_img">
+					<image src="{{ travel.driverPicture }}"></image>
+				</view>
+			</block>
+			<block wx:if="{{ options.travelType == 1 }}">
+				<view class="owner_img">
+					<image src="{{ travel.passengerPicture }}"></image>
+				</view>
+			</block>
 			<view class="owner_right">
 				<view class="owner_info">
 					<view class="name">{{ travel.nickname }}</view>
@@ -52,7 +59,9 @@
 					<image bindtap="postLike" src="../../images/btn_like@3x.png"></image>
 				</block>
 				<view class="ok_like">{{ awardFriends.length }}人已点赞</view>
-				<view class="like_list_title">点赞的好友</view>
+				<block wx:if="{{ awardFriends.length != 0 }}">
+					<view class="like_list_title">点赞的好友</view>
+				</block>
 			</view>
 			<view class="like_list">
 				<view class="like_list_li" wx:for-items="{{ awardFriends }}" wx:key="{{ index }}">
@@ -89,7 +98,7 @@
 	</block>
 	<block wx:if="{{ options.travelType == 1 }}">
 		<view class="travel_info">
-			<view>{{ travel.surplusSeats }}人乘车</view>
+			<view>{{ travel.seats }}人乘车</view>
 			<view>车费{{ travel.travelPrice }}元</view>
 		</view>
 		<view class="submit_btn" bindtap="grabAsingLe">抢单</view>

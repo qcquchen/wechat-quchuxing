@@ -122,3 +122,6 @@ export const deleteLike = (options) => _apiPOST(`${API_ROOT}/feed/travelUnlike`,
 
 // 行程分享 /feed/travelShare
 export const shareTravel = (options) => _apiPOST(`${API_ROOT}/feed/travelShare`, options)
+
+// 车主抢单接口 /travel/driverSeckill
+export const driverGrabAsingle = (options) => _apiPOST(`${API_ROOT}/travel/driverSeckill`, options)
