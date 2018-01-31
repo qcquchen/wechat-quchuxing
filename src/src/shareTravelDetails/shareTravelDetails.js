@@ -59,9 +59,13 @@ Page({
       const { deviceInfo } = app.globalData.entities
       let map_width = deviceInfo.windowWidth - 60
       first_controls.position.left = map_width
-			// ops.travelId = 12916300946015
-			// ops.phone = 15920739138
-			// ops.travelType = 1
+
+      if(ops.scene){
+        let new_ops = ops.scene.split(',')
+        ops.travelId = new_ops[0]
+        ops.phone = new_ops[1]
+        ops.travelType = new_ops[2]
+      }
 			this.setData({
 				options: ops,
         controls:[first_controls, two_controls]
