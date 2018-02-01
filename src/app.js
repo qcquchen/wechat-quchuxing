@@ -9,6 +9,7 @@ var myAmapFun = new amapFile.AMapWX({key:'35d96308ca0be8fd6029bd3585064095'})
 
 var appConfig = {
     onLaunch: function (ops) {
+      let that = this
       // 获取微信群ID
       if(ops.scene == 1044){
         wx.getShareInfo({
@@ -20,9 +21,7 @@ var appConfig = {
             }
         })
       }
-      this.getWechatInfo().then(res => {
-        // this.initCallBack()
-      })
+      this.getWechatInfo()
     },
     initCallBack () {
     },
@@ -44,7 +43,7 @@ var appConfig = {
                   data : userInfo
                 })
                 userInfo.code = loginres.code
-                return that.weChatSignin(userInfo).then(resolve, reject)
+                that.weChatSignin(userInfo)
               },
               fail () {
                 wx.showModal({
@@ -80,7 +79,6 @@ var appConfig = {
                   reject()
                 }
               })
-            resolve('toLogin')
           },
           fail (err) {
             console.log('wx.login  error ', err)
@@ -113,7 +111,7 @@ var appConfig = {
             util.saveUserInfo(login_json)
             let openId = login_json.data.result.Openid
             this.postFindLogin(openId)
-          }) 
+          })
       })
     },
     postFindLogin(openId){

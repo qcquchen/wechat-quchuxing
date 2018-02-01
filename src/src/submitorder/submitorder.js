@@ -109,11 +109,11 @@ Page({
 			}
 			wx.setStorageSync('pay_datails', data)
 			util.setEntities({
-		      key: 'setTimeNumber',
-		      value: 180
-		    })
+	      key: 'setTimeNumber',
+	      value: 180
+	    })
 			wx.redirectTo({
-				url: `/src/submitorder/confirmOrder?price=${price}`
+				url: `/src/submitorder/confirmOrder?price=${price}&sharePhone=${sharePhone}`
 			})
 		})
 	}

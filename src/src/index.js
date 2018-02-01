@@ -153,7 +153,6 @@ Page({
             this.setTimeoutInitData(this.initData)
           }
         }
-        
         this.getSearchAddressCallBack()
       },
       onLoad(option){

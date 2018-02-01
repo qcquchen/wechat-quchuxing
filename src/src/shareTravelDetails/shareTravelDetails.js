@@ -59,7 +59,6 @@ Page({
       const { deviceInfo } = app.globalData.entities
       let map_width = deviceInfo.windowWidth - 60
       first_controls.position.left = map_width
-
       if(ops.scene){
         let new_ops = ops.scene.split(',')
         ops.travelId = new_ops[0]

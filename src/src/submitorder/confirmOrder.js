@@ -13,11 +13,11 @@ Page({
 	},
 	onLoad(option){
 		let pay_datails = wx.getStorageSync('pay_datails')
-		const { price } = option
-		console.log(pay_datails,'---------------pay_datails')
+		const { price, sharePhone } = option
 		this.setData({
 			order: pay_datails,
-			price: price
+			price: price,
+			sharePhone: sharePhone
 		})
 		this.setIntervalTime()
 	},
@@ -41,18 +41,27 @@ Page({
 		}, 1000)
 	},
 	postWxPay(){
-		const { order } = this.data
+		const { order, sharePhone } = this.data
+		const { token } = app.globalData.entities.loginInfo
 		util.toPay(order).then(res => {
 			setTimeout(() => {
 				wx.redirectTo({
 					url: `/src/match/match?type=details&id=${order.travelId}&travelType=1`
 				})
 			}, 2000)
-		}, () => {
-		 	//    _this.setData({
-			//     submitBtnLoading: false
-			// })
-			// util.track(`用户微信支付失败`)
+		}, e => {
+			if(sharePhone){
+				passenger_api.closeWxPay({
+					data: {
+						ordersId: order.ordersId,
+						token: token
+					}
+				}).then(json => {
+					if(json.data.status === 200){
+						console.log('取消订单')
+					}
+				})
+			}
 		})
 	},
 	closeWxPay: function(){
