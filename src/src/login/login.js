@@ -17,7 +17,7 @@ Page({
 		code_type: 'no'
 	},
 	inPhone:function(e){
-		if(!(/^1[3|4|5|8|7][0-9]\d{4,8}$/.test(e.detail.value))){
+		if(!(/^1[3-9][0-9]\d{8}$/.test(e.detail.value))){
 			this.setData({
 				phone_false: true
 			})
