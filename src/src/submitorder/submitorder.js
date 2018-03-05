@@ -8,44 +8,31 @@ var app = getApp()
 
 Page({
 	data: {
-		seat: [{
-			number: 1,
-			type: false
-		}, {
-			number: 2,
-			type: false
-		}, {
-			number: 3,
-			type: false
-		}, {
-			number: 4,
-			type: false
-		}],
+		seat: [],
 		price: 0,
 		submit_price: 0,
 		insurance: false
 	},
-	onLoad(){
+	onLoad(options){
 		const {order_info} = app.globalData.entities
-		const { seat }= this.data
+		let order = order_info ? order_info : options
+		let seat = util.seats(order.bookSeats)
 		seat.map((json, index) => {
-    	if(index == order_info.bookSeats - 1){
-    		json.type = !json.type
+    	if(index == order.bookSeats - 1){
+    		json.type = true
     	}else{
     		json.type = false
     	}
     })
-		if(order_info.bookSeats - 1 < 0){
-			seat[0].type = true
-		}
 		this.setData({
-			price: order_info.price,
-			mine_seat: order_info.bookSeats,
-			travelId: order_info.travelId,
-			submit_price: order_info.price * order_info.bookSeats,
-			people_id: order_info.passengerTravelId,
+			price: order.price,
+			mine_seat: order.bookSeats,
+			travelId: order.travelId,
+			submit_price: order.price * order.bookSeats,
+			people_id: order.passengerTravelId,
 			seat: seat,
-			sharePhone: order_info.sharePhone
+			sharePhone: order.sharePhone,
+			share_type: order.share_type
 		})
 	},
 	selectSeat:function(e){
@@ -74,7 +61,7 @@ Page({
 	    })
 	},
 	submit:function(){
-		const { submit_price, travelId, seat, price, insurance, people_id, sharePhone } = this.data
+		const { submit_price, travelId, seat, price, insurance, people_id, sharePhone, share_type } = this.data
 		let mine_seat = seat.find(json => json.type == true).number
 		const { token, openId } = app.globalData.entities.loginInfo
 		passenger_api.postPay({
@@ -113,7 +100,7 @@ Page({
 	      value: 180
 	    })
 			wx.redirectTo({
-				url: `/src/submitorder/confirmOrder?price=${price}&sharePhone=${sharePhone}`
+				url: `/src/submitorder/confirmOrder?price=${price}&sharePhone=${sharePhone}&share_type=${share_type}`
 			})
 		})
 	}

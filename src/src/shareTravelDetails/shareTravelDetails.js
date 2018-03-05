@@ -60,7 +60,7 @@ Page({
       let map_width = deviceInfo.windowWidth - 60
       first_controls.position.left = map_width
       if(ops.scene){
-        let new_ops = ops.scene.split(',')
+        let new_ops = ops.scene.split('%2C')
         ops.travelId = new_ops[0]
         ops.phone = new_ops[1]
         ops.travelType = new_ops[2]
@@ -100,13 +100,6 @@ Page({
 	postLike: function(e){
 		let self = this
 		const { userInfo, travel } = this.data
-		if(!userInfo.phone){
-			wx.navigateTo({
-        url: `/src/login/login`
-      })
-      return
-		}
-
 		driver_api.postLike({
 			data:{
 				token: userInfo.token,
@@ -114,18 +107,44 @@ Page({
 				likeSource: 1
 			}
 		}).then(json => {
+      if(json.data.status == -1){
+        wx.navigateTo({
+          url: `/src/login/login`
+        })
+        return
+      }
+
+
+      var Arr = ["腾讯","阿里巴巴","坐坐正","圈圈互助","朋友保","海淀留创园","摩拜单车","湖北职业技术学校","幸福嘉园儿科","河北省人民政府","北京人民大会堂","娃儿子","台湾人民","香港人民","澳门人民"]
+      var n = Math.floor(Math.random() * Arr.length + 1)-1
+      var adsHost = Arr[n]
+
 			if(json.data.status == 200){
-				wx.showModal({
-				  title: '恭喜你获得'+ json.data.likerAward.billMoney +'元现金红包',
-				  content: '请使用验证的手机号登录咚咚拼车App，前往我的-钱包页面提现',
-				  showCancel: false,
-				  confirmText: '知道了',
-				  success: function(res) {
-				    if (res.confirm) {
-						self.shareTravelDetails()
-				    }
-				  }
-				})
+        if(json.data.likerAward.billMoney != 0){
+          wx.showModal({
+            title: '恭喜你获得[趣出行X' + adsHost +']的'+ json.data.likerAward.billMoney +'元红包，新年吉祥哦！',
+            content: '请使用验证的手机号登录趣出行探索版，前往我的-钱包页面提现',
+            showCancel: false,
+            confirmText: '我知道了',
+            success: function(res) {
+              if (res.confirm) {
+                self.shareTravelDetails()
+              }
+            }
+          })
+        }else{
+          wx.showModal({
+            title: '提示',
+            content: '今日，您的点赞红包已领完，可以分享给大家领哦~',
+            showCancel: false,
+            confirmText: '好的',
+            success: function(res) {
+              if (res.confirm) {
+                self.shareTravelDetails()
+              }
+            }
+          })
+        }
 			}
 		})
 	},
@@ -167,14 +186,20 @@ Page({
 	          latitude: start[1]
 		    })
 		}).then(() => {
-			setTimeout(function(){
 			  wx.hideLoading()
-			},2000)
 		})
 	},
 	submit: function(){
 		const { travel, options } = this.data
 		let parmas = Object.assign({}, {bookSeats: travel.surplusSeats}, {travelId: travel.travelId}, { price: travel.travelPrice }, { sharePhone: options.phone })
+    if(travel.surplusSeats === 0){
+      wx.showModal({
+				title: '提示',
+				content: '座位被抢光了~',
+				showCancel: true
+			})
+      return
+    }
 		util.setEntities({
       key: 'order_info',
       value: parmas
@@ -204,8 +229,10 @@ Page({
 	onShareAppMessage() {
 		const { userInfo, travel, options } = this.data
     return {
-      title: travel.nickname + ' ' + travel.startTimeTxt + ' ' + travel.startAddress + '--->' + travel.endAddress,
+      //title: travel.nickname + ' ' + travel.startTimeTxt + ' ' + travel.startAddress + '--->' + travel.endAddress,
+      title: "快来领[趣出行X娃儿子等]的红包，可提现",
       path: `/src/shareTravelDetails/shareTravelDetails?travelId=${options.travelId}&phone=${options.phone}&travelType=${options.travelType}`,
+      imageUrl:'../../images/luckymoney.png',
       success(res){
     		// 获取微信群ID
         // wx.getShareInfo({
@@ -244,17 +271,32 @@ Page({
 		}
 		wx.showModal({
 		  title: '提示',
-		  content: '抢单并接送乘客',
+		  content: '抢单需接送乘客',
 		  success: function(res) {
 		    if (res.confirm) {
 		      driver_api.driverGrabAsingle({
 						data:{
 							token: userInfo.token,
 							passengerTravelId: travel.travelId,
-							sharePhone: options.phone
+							sharePhone: Number(options.phone)
 						}
 					}).then(json => {
+            if(json.data.status === -1){
+              return
+            }
 						if(json.data.status === -5){
+              wx.showModal({
+							  title: '提示',
+							  content: '未登录~',
+								confirmText: '去登录',
+							  success: function(res) {
+							    if (res.confirm) {
+                    wx.navigateTo({
+                      url: `/src/login/login`
+                    })
+							    }
+							  }
+							})
 							wx.showModal({
 							  title: '提示',
 							  content: '您还未进行车主认证，请认证为车主之后再来哦~',
@@ -279,7 +321,7 @@ Page({
 						}else{
 							wx.showModal({
 							  title: '提示',
-							  content: json.data.detail + ', 请前往咚咚拼车APP查看',
+							  content: json.data.detail + ', 请前往趣出行探索版查看',
 								confirmText: '知道了',
 								showCancel: false
 							})
@@ -343,5 +385,11 @@ Page({
       })
       break;
     }
+  },
+  tips:function(){
+    wx.showModal({
+      title: '提示',
+      content: '请打开App Store或应用市场下载趣出行探索版'
+    })
   }
 })

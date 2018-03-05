@@ -12,6 +12,16 @@
 	.section{
 		border-bottom: 1px solid #EDEDF0;
 		padding: 15px 0;
+		>button{
+			margin: 0;
+			padding: 0;
+			font-size: 14px;
+			background: #ffffff;
+			color: #B9BDC3;
+		}
+		>button::after{
+			border: none;
+		}
 	}
 	.verification_code{
 		display: flex;
@@ -34,7 +44,7 @@
 		margin: 0 15px;
 		color: #ffffff;
 		border-radius: 10px;
-		
+
 	}
 
 	>button:active{
@@ -50,5 +60,5 @@
 }
 
 .border_No{
-	border-bottom: 1px solid #E64340 !important; 
+	border-bottom: 1px solid #E64340 !important;
 }

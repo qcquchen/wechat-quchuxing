@@ -14,7 +14,7 @@
 	<view class="body_header">
 		<view class="travel_title">
 			<view class="travel_time">{{ travel.startTimeTxt }}</view>
-			<view class="check_then_trip">查看更多行程 ></view>
+			<!--view class="check_then_trip" bindtap="tips">查看更多行程 ></view-->
 		</view>
 		<view class="travel_address">
 			<view class="start_addr">{{ travel.startAddress }}</view>
@@ -42,7 +42,9 @@
 					<view class="sex">
 						<image src="../../images/img_men@3x.png"></image>
 					</view>
-					<view class="owner_carCode">{{ travel.car }}</view>
+					<block wx:if="{{ travel.car != null }}">
+						<view class="owner_carCode">{{ travel.car }}</view>
+					</block>
 				</view>
 				<view class="speak_prompt">
 					<image src="../../images/img_pop@3x.png"></image>
@@ -58,9 +60,9 @@
 				<block wx:else>
 					<image bindtap="postLike" src="../../images/btn_like@3x.png"></image>
 				</block>
-				<view class="ok_like">{{ awardFriends.length }}人已点赞</view>
+				<view class="ok_like">{{ share_info.likes }}人已点赞</view>
 				<block wx:if="{{ awardFriends.length != 0 }}">
-					<view class="like_list_title">点赞的好友</view>
+					<view class="like_list_title">获得红包的好友</view>
 				</block>
 			</view>
 			<view class="like_list">
@@ -72,18 +74,18 @@
 		</view>
 	</view>
 	<view class="body_foot">
-		<view class="foot_title">王X强 分享10个行程 赚20元</view>
+		<view class="foot_title">狗年吉祥，独乐乐不如众乐乐</view>
 		<view class="foot_input">
 			<!-- <view class="input_phone">
 				<input placeholder="输入领奖手机号" />
 			</view> -->
 			<button class="foot_btn" open-type="{{ login_active ? 'share' : ''}}" bindtap="isLogin">
-				<view>分享抢红包</view>
+				<view>分享，让更多人领到红包</view>
 			</button>
 		</view>
-		<view class="foot_btn_text">下载咚咚拼车App，红包到账先知道</view>
+		<view class="foot_btn_text" bindtap="tips">对方通过您的分享成单，您能挣到票价10%的收益哦！</view>
 	</view>
-	<view class="share_App">分享规则套路深，请App内查看 ></view>
+	<view class="share_App" bindtap="tips"> 下载趣出行探索版，更多行程更多红包 ></view>
 	<view class="foot_img">
 		<image src="../../images/img_endbg@3x.png"></image>
 	</view>

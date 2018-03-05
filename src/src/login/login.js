@@ -14,7 +14,8 @@ Page({
 		code: null,
 		countdown: '获取验证码',
 		phone_type: 'no',
-		code_type: 'no'
+		code_type: 'no',
+		disabled: false
 	},
 	inPhone:function(e){
 		if(!(/^1[3-9][0-9]\d{8}$/.test(e.detail.value))){
@@ -68,13 +69,17 @@ Page({
 			let currentTime = moment().set({second: 60})
 			let time = setInterval(() => {
 				currentTime = moment(currentTime).subtract(1, 'seconds')
+				console.log('false')
 				this.setData({
-					countdown: moment(currentTime).toDate().pattern('ss') + 's'
+					countdown: moment(currentTime).toDate().pattern('ss') + 's',
+					disabled: true
 				})
 				if(moment(currentTime).second() == 0){
 					clearInterval(time)
+					console.log('true')
 					this.setData({
-						countdown: '获取验证码'
+						countdown: '获取验证码',
+						disabled: false
 					})
 				}
 			}, 1000)
@@ -91,7 +96,27 @@ Page({
 		const { openId } = app.globalData.entities.loginInfo
 		let parmas = Object.assign({}, { phone: phone.value }, { captcha: code.value }, { openId: openId })
 		driver_api.postLogin({data: parmas}).then(json => {
-
+			if(json.data.status == -1){
+				wx.showToast({
+					 title: '登录失败',
+					 icon: 'success',
+					 duration: 2000
+				 })
+				 return
+			}
+			if(json.data.status == -3){
+				wx.showModal({
+				  title: '提示',
+				  content: '验证码错误',
+					showCancel: false,
+				  success: function(res) {
+				    if (res.confirm) {
+				      console.log('确定')
+				    }
+				  }
+				})
+				return
+			}
 			json.data.openId = openId
 			util.setEntities({
 		        key: 'loginInfo',
@@ -111,12 +136,6 @@ Page({
 					delta: 1
 				})
 			}, 2000)
-		}, e => {
-			 wx.showToast({
-			  title: '登录失败',
-			  icon: 'success',
-			  duration: 2000
-			})
 		})
 	}
 })

@@ -1,6 +1,6 @@
 let extConfig = wx.getExtConfigSync? wx.getExtConfigSync(): {}
 
-const API_ROOT = extConfig.host || `https://t1.passenger.quchuxing.com.cn`
+const API_ROOT = extConfig.host || `https://v1.passenger.quchuxing.com.cn`
 
 const api = require('./apiUtils')
 

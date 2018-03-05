@@ -355,7 +355,7 @@ export const checkSystemUser = () => {
     if (user.id) {
       return resolve()
     }
-    
+
     wx.navigateTo({
       url: '/src/login/login',
       success () {
@@ -629,14 +629,14 @@ export const toPay = (res) => {
 // 在Call api之前storage取一次
 export const checkEntities = ({ key, api, params }) => {
   let app = getApp()
-  
+
   const data = app.globalData.entities[key]
 
   return new Promise((resolve, reject) => {
     if (data) {
       return resolve(data)
     }
-    
+
     api(params).then(res => {
       const data = res.data
       app.globalData.entities[key] = data
@@ -646,7 +646,7 @@ export const checkEntities = ({ key, api, params }) => {
 }
 
 export const initSystemInfo = () => {
-  
+
   return new Promise((resolve, reject) => {
     wx.getSystemInfo({
       success: function(res) {
@@ -735,6 +735,17 @@ export const seats_false = (data) => {
     })
   }
   return seat_imgs
+}
+
+export const seats = (data) => {
+  let array = []
+  for(let i = 0; i < data; i++){
+    array.push({
+			number: i + 1,
+			type: false
+		})
+  }
+  return array
 }
 
 export const prices = (data) => {

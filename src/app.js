@@ -103,7 +103,7 @@ var appConfig = {
     weChatSignin (options, cb) {
       const that = this
       const { code } = options
-      let parmas = Object.assign({}, {code: code})
+      let parmas = Object.assign({}, {code: code}, {type: 'No_1'})
       return new Promise((resolve, reject) => {
           driver_api.postWechatLogin({
             data: parmas
@@ -124,7 +124,6 @@ var appConfig = {
         if(status != -1){
           json.data.openId = openId
           this.globalData.entities.loginInfo = json.data
-
           util.setStorage({
             key : 'first_userInfo',
             data : json.data

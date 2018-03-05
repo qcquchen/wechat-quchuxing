@@ -6,7 +6,7 @@
 	</view>
 	<view class="section verification_code {{ code_false ? 'border_No' : '' }}">
 	  <input bindinput="inCode" placeholder="输入验证码" confirm-type="完成" />
-	  <view bindtap="getCode">{{ countdown }}</view>
+	  <button bindtap="getCode" disabled="{{disabled}}">{{ countdown }}</button>
 	</view>
 </view>
 
