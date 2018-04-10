@@ -30,7 +30,7 @@
   ],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "趣出行",
+    "navigationBarTitleText": "小五拼车",
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FFFFFF",
     "enablePullDownRefresh" : false

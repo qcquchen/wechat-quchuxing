@@ -74,7 +74,7 @@
 		</view>
 	</view>
 	<view class="body_foot">
-		<view class="foot_title">狗年吉祥，独乐乐不如众乐乐</view>
+		<view class="foot_title">独乐乐不如众乐乐</view>
 		<view class="foot_input">
 			<!-- <view class="input_phone">
 				<input placeholder="输入领奖手机号" />
@@ -85,7 +85,7 @@
 		</view>
 		<view class="foot_btn_text" bindtap="tips">对方通过您的分享成单，您能挣到票价10%的收益哦！</view>
 	</view>
-	<view class="share_App" bindtap="tips"> 下载趣出行探索版，更多行程更多红包 ></view>
+	<view class="share_App" bindtap="tips"> 下载趣出行，更多行程更多红包 ></view>
 	<view class="foot_img">
 		<image src="../../images/img_endbg@3x.png"></image>
 	</view>

@@ -103,7 +103,7 @@ var appConfig = {
     weChatSignin (options, cb) {
       const that = this
       const { code } = options
-      let parmas = Object.assign({}, {code: code}, {type: 'No_1'})
+      let parmas = Object.assign({}, {code: code}, {type: 'No_2'})
       return new Promise((resolve, reject) => {
           driver_api.postWechatLogin({
             data: parmas

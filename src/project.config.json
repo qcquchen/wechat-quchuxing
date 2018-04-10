@@ -1,5 +1,5 @@
 {
-	"description": "项目配置文件。",
+	"description": "description",
 	"setting": {
 		"urlCheck": true,
 		"es6": true,
@@ -9,8 +9,8 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "1.6.6",
-	"appid": "wx63cb1dcf8f5b1d6d",
-	"projectname": "quchuxing",
+	"appid": "wx70d73e053ece60f2",
+	"projectname": "小五拼车",
 	"condition": {
 		"search": {
 			"current": -1,

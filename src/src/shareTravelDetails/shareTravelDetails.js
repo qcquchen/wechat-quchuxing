@@ -123,7 +123,7 @@ Page({
         if(json.data.likerAward.billMoney != 0){
           wx.showModal({
             title: '恭喜你获得[趣出行X' + adsHost +']的'+ json.data.likerAward.billMoney +'元红包，新年吉祥哦！',
-            content: '请使用验证的手机号登录趣出行探索版，前往我的-钱包页面提现',
+            content: '请使用验证的手机号登录趣出行，前往我的-钱包页面提现',
             showCancel: false,
             confirmText: '我知道了',
             success: function(res) {
@@ -321,7 +321,7 @@ Page({
 						}else{
 							wx.showModal({
 							  title: '提示',
-							  content: json.data.detail + ', 请前往趣出行探索版查看',
+							  content: json.data.detail + ', 请前往趣出行查看',
 								confirmText: '知道了',
 								showCancel: false
 							})
@@ -389,7 +389,7 @@ Page({
   tips:function(){
     wx.showModal({
       title: '提示',
-      content: '请打开App Store或应用市场下载趣出行探索版'
+      content: '请打开App Store或应用市场下载趣出行'
     })
   }
 })
